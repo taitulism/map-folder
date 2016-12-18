@@ -1,6 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
+const pathResolve = require('path').resolve;
 
 const structure = require('../index');
 
@@ -18,29 +19,29 @@ describe('structure', () => {
     describe('mapToJson', () => {
         it('maps a given folder to a JSON', (done) => {
             const expectedResult = {
-                path: './test/map-to-json',
+                path: pathResolve('./test/map-to-json'),
                 type: 0,
                 entries: {
                     'index.js': {
-                        path: 'test\\map-to-json\\index.js',
+                        path: pathResolve('test/map-to-json/index.js'),
                         type: 1
                     },
                     a: {
-                        path: 'test\\map-to-json\\a',
+                        path: pathResolve('test/map-to-json/a'),
                         type: 0,
                         entries: {
                             "index.js": {
-                                path: 'test\\map-to-json\\a\\index.js',
+                                path: pathResolve('test/map-to-json/a/index.js'),
                                 type: 1
                             }
                         }
                     },
                     b: {
-                        path: 'test\\map-to-json\\b',
+                        path: pathResolve('test/map-to-json/b'),
                         type: 0,
                         entries: {
                             "index.js": {
-                                path: 'test\\map-to-json\\b\\index.js',
+                                path:pathResolve('test/map-to-json/b/index.js'),
                                 type: 1
                             }
                         }
