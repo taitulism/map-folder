@@ -9,6 +9,7 @@ describe('structure', () => {
         expect(structure).to.be.an.object;
         expect(structure.mapToJson).to.be.a.function;
     });
+    
     it('has "mapToJson" API method', () => {
         expect(structure).to.be.an.object;
         expect(structure.mapToJson).to.be.a.function;
