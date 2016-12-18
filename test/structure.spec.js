@@ -11,12 +11,12 @@ describe('structure', () => {
         expect(structure.mapToJson).to.be.a.function;
     });
     
-    it('has "mapToJson" API method', () => {
+    it('has a ".toJson()" API method', () => {
         expect(structure).to.be.an.object;
-        expect(structure.mapToJson).to.be.a.function;
+        expect(structure.toJson).to.be.a.function;
     });
 
-    describe('mapToJson', () => {
+    describe('.toJson()', () => {
         it('maps a given folder to a JSON', (done) => {
             const expectedResult = {
                 path: pathResolve('./test/map-to-json'),
@@ -49,7 +49,7 @@ describe('structure', () => {
                 }
             };
 
-            structure.mapToJson('./test/map-to-json', (err, result) => {
+            structure.toJson('./test/map-to-json', (err, result) => {
                 expect(result).to.deep.equal(expectedResult);
                 done();
             });
