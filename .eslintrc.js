@@ -115,7 +115,6 @@ module.exports = {
         "no-void": "error",
         "no-whitespace-before-property": "error",
         "no-with": "error",
-        "object-curly-newline": "error",
         "object-property-newline": "error",
         "object-shorthand": "error",
         "one-var-declaration-per-line": "error",
@@ -141,6 +140,12 @@ module.exports = {
         "wrap-regex": "error",
         "yield-star-spacing": "error",
         "yoda": "error",
+        "object-curly-newline": [
+            "error",
+            {
+                "minProperties": 1
+            }
+        ],
         "dot-location": [
             "error",
             "property"
@@ -162,7 +167,7 @@ module.exports = {
         ],
         "linebreak-style": [
             "error",
-            "windows"
+            "unix"
         ],
         "newline-after-var": [
             "error",
