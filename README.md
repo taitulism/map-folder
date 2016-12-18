@@ -20,7 +20,7 @@ const structure = require('structure');
 
 API
 ===
-* [.toJson()](#toJsonpath,callback)
+* [.toJson()](#tojsonpath-callback)
 * .toArry()
 * .fromJson()
 * .fromArray()
