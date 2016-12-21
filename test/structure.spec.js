@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const pathResolve = require('path').resolve;
+const resolvePath = require('path').resolve;
 
 const structure = require('../index');
 
@@ -19,29 +19,29 @@ describe('structure', () => {
     describe('.toJson()', () => {
         it('maps a given folder to a JSON', (done) => {
             const expectedResult = {
-                path: pathResolve('./test/map-to-json'),
+                path: resolvePath('./test/to-json'),
                 type: 0,
                 entries: {
                     'index.js': {
-                        path: pathResolve('test/map-to-json/index.js'),
+                        path: resolvePath('test/to-json/index.js'),
                         type: 1
                     },
                     a: {
-                        path: pathResolve('test/map-to-json/a'),
+                        path: resolvePath('test/to-json/a'),
                         type: 0,
                         entries: {
                             "index.js": {
-                                path: pathResolve('test/map-to-json/a/index.js'),
+                                path: resolvePath('test/to-json/a/index.js'),
                                 type: 1
                             }
                         }
                     },
                     b: {
-                        path: pathResolve('test/map-to-json/b'),
+                        path: resolvePath('test/to-json/b'),
                         type: 0,
                         entries: {
                             "index.js": {
-                                path:pathResolve('test/map-to-json/b/index.js'),
+                                path: resolvePath('test/to-json/b/index.js'),
                                 type: 1
                             }
                         }
@@ -49,7 +49,7 @@ describe('structure', () => {
                 }
             };
 
-            structure.toJson('./test/map-to-json', (err, result) => {
+            structure.toJson('./test/to-json', (err, result) => {
                 expect(result).to.deep.equal(expectedResult);
                 done();
             });
