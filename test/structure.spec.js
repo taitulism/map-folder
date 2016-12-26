@@ -19,28 +19,34 @@ describe('structure', () => {
     describe('.toJson()', () => {
         it('maps a given folder to a JSON', (done) => {
             const expectedResult = {
+                mode: '666',
                 path: resolvePath('./test/to-json'),
                 type: 0,
                 entries: {
                     'index.js': {
+                        mode: '666',
                         path: resolvePath('test/to-json/index.js'),
                         type: 1
                     },
                     a: {
+                        mode: '666',
                         path: resolvePath('test/to-json/a'),
                         type: 0,
                         entries: {
                             "index.js": {
+                                mode: '666',
                                 path: resolvePath('test/to-json/a/index.js'),
                                 type: 1
                             }
                         }
                     },
                     b: {
+                        mode: '666',
                         path: resolvePath('test/to-json/b'),
                         type: 0,
                         entries: {
                             "index.js": {
+                                mode: '666',
                                 path: resolvePath('test/to-json/b/index.js'),
                                 type: 1
                             }
