@@ -45,7 +45,6 @@ module.exports = {
         "newline-per-chained-call": "error",
         "no-alert": "error",
         "no-array-constructor": "error",
-        "no-bitwise": "error",
         "no-caller": "error",
         "no-catch-shadow": "error",
         "no-confusing-arrow": "error",
@@ -219,6 +218,7 @@ module.exports = {
             "error",
             "never"
         ],
+        "no-bitwise": "off",
         "no-use-before-define": "off",
         "no-warning-comments": "off",
         "quote-props": "off",
