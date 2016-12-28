@@ -1,7 +1,7 @@
 {
   "name": "map-folder",
   "version": "0.0.1",
-  "description": "A node module for mapping files and folders to a JSON object.",
+  "description": "A node module for mapping folders to a JSON object.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/**/*.spec.js",
