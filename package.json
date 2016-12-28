@@ -1,22 +1,23 @@
 {
-  "name": "structure",
+  "name": "map-folder",
   "version": "0.0.1",
-  "description": "A node module for creating and mapping files and folders.",
+  "description": "A node module for mapping files and folders to a JSON object.",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/**/*.spec.js",
     "lint": "eslint ./index.js ./lib"
   },
   "keywords": [
-    "create files",
-    "create folders",
-    "map files",
-    "map folders",
-    "parse folders"
+    "directory",
+    "folder",
+    "files",
+    "map",
+    "parse",
+    "json"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/taitulism/structure"
+    "url": "https://github.com/taitulism/mapFolder"
   },
   "author": "taitulism@gmail.com",
   "license": "MIT",
