@@ -1,38 +1,18 @@
 (A work in progress...)
 
-structure [![Build Status](https://travis-ci.org/taitulism/structure.svg?branch=master)](https://travis-ci.org/taitulism/structure)
+mapFolder [![Build Status](https://travis-ci.org/taitulism/structure.svg?branch=master)](https://travis-ci.org/taitulism/structure)
 =========
-
-* Create a full folder structure based on a JSON object or an array.
-* Map an existing folder structure to a JSON/Array.
-* Choose the result object's fields like: totalSize, chmod, fileExtension and more.
-* async
+Generates a JSON object that reflects a folder structure.
 
 Installation and usage
 ----------------------
 ```sh
-$ npm install --save structure
+$ npm install --save map-folder
 ```
 
 ```js
-const structure = require('structure');
+const mapFolder = require('map-folder');
 ```
-
-API
-===
-* [.toJson()](#tojsonpath-callback)
-* .toArry()
-* .fromJson()
-* .fromArray()
-
-
-.toJson(path, callback)
---------------------------
-Generates a JSON object that reflects a folder structure.
-The `callback` gets called with two arguments:  
-`err` and `result`.
-
-**Example:**
 
 ```
 my-folder
@@ -43,7 +23,7 @@ my-folder
 
 
 ```js
-structure.toJson('path/to/my-folder', (err, result) => {
+mapFolder.toJson('path/to/my-folder', (err, result) => {
     if (err) {
         throw err;
     }
@@ -63,20 +43,24 @@ structure.toJson('path/to/my-folder', (err, result) => {
 result = {
     path: 'path/to/my-folder',
     type: 0,
+    mode: '0775',
     entries: {
         'utils': {
             path:'path/to/my-folder/utils',
-            type: 0
+            type: 0,
+            mode: '0775',
             entries: {
                 "helper.js": {
                     path:'path/to/my-folder/utils/helper.js',
-                    type: 1
+                    type: 1,
+                    mode: '0664'
                 }
             }
         },
         'index.js': {
             path:'path/to/my-folder/index.js',
-            type: 1
+            type: 1,
+            mode: '0664'
         }
     }
 };
