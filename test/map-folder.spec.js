@@ -10,9 +10,9 @@ const platform = os.platform();
 const FOLDER = 0;
 const FILE   = 1;
 
-const winDefaultMode         = '666';
-const LinuxFileDefaultMode   = '644';
-const LinuxFolderDefaultMode = '755';
+const winDefaultMode         = '0666';
+const LinuxFileDefaultMode   = '0644';
+const LinuxFolderDefaultMode = '0755';
 
 function getDefaultModeByPlatform (entryType = FILE) {
     if (platform === 'win32') return winDefaultMode;
