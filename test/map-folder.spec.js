@@ -32,6 +32,7 @@ describe('mapFolder', () => {
             mode: getDefaultModeByPlatform(FOLDER),
             path: resolvePath('./test/map-folder'),
             type: 0,
+            len: 3,
             entries: {
                 'index.js': {
                     mode: getDefaultModeByPlatform(FILE),
@@ -42,6 +43,7 @@ describe('mapFolder', () => {
                     mode: getDefaultModeByPlatform(FOLDER),
                     path: resolvePath('test/map-folder/a'),
                     type: 0,
+                    len: 1,
                     entries: {
                         'index.js': {
                             mode: getDefaultModeByPlatform(FILE),
@@ -54,6 +56,7 @@ describe('mapFolder', () => {
                     mode: getDefaultModeByPlatform(FOLDER),
                     path: resolvePath('test/map-folder/b'),
                     type: 0,
+                    len: 1,
                     entries: {
                         'index.js': {
                             mode: getDefaultModeByPlatform(FILE),
