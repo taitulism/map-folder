@@ -39,7 +39,7 @@ describe('mapFolder', () => {
                     path: resolvePath('test/map-folder/index.js'),
                     type: 1,
                     name: 'index',
-                    ext: '.js'
+                    ext: 'js'
                 },
                 a: {
                     mode: getDefaultModeByPlatform(FOLDER),
@@ -52,7 +52,7 @@ describe('mapFolder', () => {
                             path: resolvePath('test/map-folder/a/index.js'),
                             type: 1,
                             name: 'index',
-                            ext: '.js'
+                            ext: 'js'
                         }
                     }
                 },
@@ -67,7 +67,7 @@ describe('mapFolder', () => {
                             path: resolvePath('test/map-folder/b/index.js'),
                             type: 1,
                             name: 'index',
-                            ext: '.js'
+                            ext: 'js'
                         }
                     }
                 }

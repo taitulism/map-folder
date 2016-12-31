@@ -17,7 +17,7 @@ const mapFolder = require('map-folder');
 ```
 
 ```
-my-folder
+target-folder
 ├─ utils
 │  └─ helper.js
 └─ index.js
@@ -25,7 +25,7 @@ my-folder
 
 
 ```js
-mapFolder.toJson('path/to/my-folder', (err, result) => {
+mapFolder.toJson('path/to/target-folder', (err, result) => {
     if (err) {
         throw err;
     }
@@ -43,24 +43,24 @@ mapFolder.toJson('path/to/my-folder', (err, result) => {
     1 = FILE
 */
 result = {
-    path: 'path/to/my-folder',
+    path: 'path/to/target-folder',
     type: 0,
     mode: '0775',
     entries: {
         'utils': {
-            path:'path/to/my-folder/utils',
+            path:'path/to/target-folder/utils',
             type: 0,
             mode: '0775',
             entries: {
                 "helper.js": {
-                    path:'path/to/my-folder/utils/helper.js',
+                    path:'path/to/target-folder/utils/helper.js',
                     type: 1,
                     mode: '0664'
                 }
             }
         },
         'index.js': {
-            path:'path/to/my-folder/index.js',
+            path:'path/to/target-folder/index.js',
             type: 1,
             mode: '0664'
         }
