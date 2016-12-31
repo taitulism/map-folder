@@ -55,6 +55,8 @@ result = {
                 "helper.js": {
                     path:'path/to/my-folder/utils/helper.js',
                     type: 1,
+                    name: 'helper',
+                    ext: '.js',
                     mode: '0664'
                 }
             }
@@ -62,6 +64,8 @@ result = {
         'index.js': {
             path:'path/to/my-folder/index.js',
             type: 1,
+            name: 'index',
+            ext: '.js',
             mode: '0664'
         }
     }
