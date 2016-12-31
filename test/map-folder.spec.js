@@ -31,12 +31,14 @@ describe('mapFolder', () => {
         const expectedResult = {
             mode: getDefaultModeByPlatform(FOLDER),
             path: resolvePath('./test/map-folder'),
+            size: 0,
             type: 0,
             len: 3,
             entries: {
                 'index.js': {
                     mode: getDefaultModeByPlatform(FILE),
                     path: resolvePath('test/map-folder/index.js'),
+                    size: 10,
                     type: 1,
                     name: 'index',
                     ext: 'js'
@@ -44,12 +46,14 @@ describe('mapFolder', () => {
                 a: {
                     mode: getDefaultModeByPlatform(FOLDER),
                     path: resolvePath('test/map-folder/a'),
+                    size: 0,
                     type: 0,
                     len: 1,
                     entries: {
                         'index.js': {
                             mode: getDefaultModeByPlatform(FILE),
                             path: resolvePath('test/map-folder/a/index.js'),
+                            size: 7,
                             type: 1,
                             name: 'index',
                             ext: 'js'
@@ -59,12 +63,14 @@ describe('mapFolder', () => {
                 b: {
                     mode: getDefaultModeByPlatform(FOLDER),
                     path: resolvePath('test/map-folder/b'),
+                    size: 0,
                     type: 0,
                     len: 1,
                     entries: {
                         'index.js': {
                             mode: getDefaultModeByPlatform(FILE),
                             path: resolvePath('test/map-folder/b/index.js'),
+                            size: 7,
                             type: 1,
                             name: 'index',
                             ext: 'js'
