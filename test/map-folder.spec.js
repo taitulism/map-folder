@@ -31,7 +31,7 @@ describe('mapFolder', () => {
         const expectedResult = {
             mode: getDefaultModeByPlatform(FOLDER),
             path: resolvePath('./test/map-folder'),
-            size: 0,
+            size: 24,
             type: 0,
             len: 3,
             entries: {
@@ -46,7 +46,7 @@ describe('mapFolder', () => {
                 a: {
                     mode: getDefaultModeByPlatform(FOLDER),
                     path: resolvePath('test/map-folder/a'),
-                    size: 0,
+                    size: 7,
                     type: 0,
                     len: 1,
                     entries: {
@@ -63,7 +63,7 @@ describe('mapFolder', () => {
                 b: {
                     mode: getDefaultModeByPlatform(FOLDER),
                     path: resolvePath('test/map-folder/b'),
-                    size: 0,
+                    size: 7,
                     type: 0,
                     len: 1,
                     entries: {
