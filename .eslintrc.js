@@ -139,12 +139,6 @@ module.exports = {
         "wrap-regex": "error",
         "yield-star-spacing": "error",
         "yoda": "error",
-        "object-curly-newline": [
-            "error",
-            {
-                "minProperties": 1
-            }
-        ],
         "dot-location": [
             "error",
             "property"
@@ -218,6 +212,7 @@ module.exports = {
             "error",
             "never"
         ],
+        "object-curly-newline": "off",
         "no-bitwise": "off",
         "no-use-before-define": "off",
         "no-warning-comments": "off",
