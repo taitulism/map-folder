@@ -37,24 +37,25 @@ mapFolder.toJson('path/to/target-folder', (err, result) => {
 
 ```js
 /*
-    Entry Types:
-    ============
-    0 = FOLDER  
-    1 = FILE
+    1. size: in bytes.
+    2. type: 0=FOLDER, 1=FILE.
 */
 result = {
     path: 'path/to/target-folder',
     type: 0,
+    size: 20,
     mode: '0775',
     entries: {
         'utils': {
             path:'path/to/target-folder/utils',
             type: 0,
+            size: 15,
             mode: '0775',
             entries: {
                 "helper.js": {
                     path:'path/to/target-folder/utils/helper.js',
                     type: 1,
+                    size: 15,
                     name: 'helper',
                     ext: 'js',
                     mode: '0664'
@@ -64,6 +65,7 @@ result = {
         'index.js': {
             path:'path/to/target-folder/index.js',
             type: 1,
+            size: 5,
             name: 'index',
             ext: 'js',
             mode: '0664'
