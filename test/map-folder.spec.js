@@ -24,7 +24,7 @@ function getDefaultModeByPlatform (entryType = FILE) {
 
 describe('mapFolder', () => {
     it('is a function', () => {
-        expect(mapFolder).to.be.a.function;
+        expect(mapFolder).to.be.a('function');
     });
 
     it('maps a given folder to a JSON', (done) => {
