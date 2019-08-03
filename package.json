@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test/**/*.spec.js",
-    "lint": "eslint ./index.js ./lib"
+	"lint": "eslint ./index.js ./lib ./test --ignore-pattern '/test/dummy-folder'",
+	"check": "npm run lint && npm test",
+    "dev": "mocha test/**/*.spec.js --watch"
   },
   "keywords": [
     "directory",
