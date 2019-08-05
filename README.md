@@ -34,36 +34,32 @@ mapFolder('path/to/target-folder', (err, result) => {
 });
 ```
 
-
 ```js
-/*
-    Type 0=FOLDER, 1=FILE
-*/
-result = {
+const FOLDER = 0;
+const FILE   = 1;
+
+// Results:
+{
     path: 'path/to/target-folder',
-    type: 0,
-    mode: '0775',
+    type: FOLDER,
     entries: {
         'utils': {
             path:'path/to/target-folder/utils',
-            type: 0,
-            mode: '0775',
+            type: FOLDER,
             entries: {
                 "helper.js": {
                     path:'path/to/target-folder/utils/helper.js',
-                    type: 1,
+                    type: FILE,
                     name: 'helper',
                     ext: 'js',
-                    mode: '0664'
                 }
             }
         },
         'index.js': {
             path:'path/to/target-folder/index.js',
-            type: 1,
+            type: FILE,
             name: 'index',
             ext: 'js',
-            mode: '0664'
         }
     }
 };
