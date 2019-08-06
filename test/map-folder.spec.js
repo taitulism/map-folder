@@ -11,12 +11,16 @@ describe('mapFolder', () => {
 		expect(mapFolder).to.be.a('function');
 	});
 
-	it('maps a given folder to a JSON', (done) => {
-		mapFolder(`./test/${DUMMY_FOLDER}`, (err, result) => {
-			if (err) throw err;
+	it('maps a given folder to a JSON', async () => {
+		let res;
+		try {
+			res = await mapFolder(`./test/${DUMMY_FOLDER}`)//, (err, result) => {
+		}
+		catch (ex) {
+			console.log(ex.toString());
+			return expect(false).to.be.true;
+		}
 
-			expect(result).to.deep.equal(expectedResult);
-			done();
-		});
+		return expect(res).to.deep.equal(expectedResult);
 	});
 });

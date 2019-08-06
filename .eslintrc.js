@@ -90,7 +90,9 @@ module.exports = {
 			"error",
 			"unix"
 		],
-		"lines-around-comment": "error",
+		"lines-around-comment": ["error", {
+			"allowBlockStart": true,
+		}],
 		"lines-around-directive": "error",
 		"lines-between-class-members": "error",
 		"max-classes-per-file": "error",

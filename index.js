@@ -1,1 +1,1 @@
-module.exports = require('./lib/map-folder');
+module.exports = require('./lib/map-entry');
