@@ -13,11 +13,14 @@ describe('mapFolder', () => {
 
 	it('maps a given folder to a JSON', async () => {
 		let res;
+
 		try {
-			res = await mapFolder(`./test/${DUMMY_FOLDER}`)//, (err, result) => {
+			res = await mapFolder(`./test/${DUMMY_FOLDER}`);
 		}
 		catch (ex) {
-			console.log(ex.toString());
+			/* eslint-disable-next-line no-console */
+			console.error(ex);
+
 			return expect(false).to.be.true;
 		}
 
