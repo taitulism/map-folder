@@ -1,31 +1,33 @@
 {
-  "name": "map-folder",
-  "version": "0.0.1",
-  "description": "Asynchronously generate a JSON representation of a folder tree",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha test/**/*.spec.js",
-	"lint": "eslint ./index.js ./lib ./test --ignore-pattern '/test/dummy-folder'",
-	"check": "npm run lint && npm test",
-    "dev": "mocha test/**/*.spec.js --watch"
-  },
-  "keywords": [
-    "directory",
-    "folder",
-    "files",
-    "map",
-    "parse",
-    "json"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/taitulism/mapFolder"
-  },
-  "author": "taitulism@gmail.com",
-  "license": "MIT",
-  "devDependencies": {
-    "chai": "4.2.0",
-    "eslint": "6.1.0",
-    "mocha": "6.2.0"
-  }
+	"name": "map-folder",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": "taitu.dev@gmail.com",
+	"description": "Asynchronously generate a JSON representation of a folder tree",
+	"main": "index.js",
+	"scripts": {
+		"dev": "mocha test/**/*.spec.js --watch",
+		"check": "npm run lint && npm test",
+		"test": "mocha test/**/*.spec.js",
+		"lint": "eslint ./index.js ./lib ./test --ignore-pattern '/test/dummy-folder'",
+		"preversion": "npm run check",
+		"postversion": "git push && git push --tags"
+	},
+	"keywords": [
+		"map",
+		"directory",
+		"folder",
+		"json",
+		"parse",
+		"files"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/taitulism/mapFolder"
+	},
+	"devDependencies": {
+		"chai": "4.2.0",
+		"eslint": "6.1.0",
+		"mocha": "6.2.0"
+	}
 }
