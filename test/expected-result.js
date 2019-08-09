@@ -1,42 +1,51 @@
-const {resolve: resolvePath} = require('path');
+const {resolve} = require('path');
 
-const {DUMMY_FOLDER} = require('./constants');
+const {DUMMY_FOLDER, FOLDER, FILE} = require('./constants');
 
 module.exports = {
-	path: resolvePath(`test/${DUMMY_FOLDER}`),
-	type: 0,
+	path: resolve(`test/${DUMMY_FOLDER}`),
+	type: FOLDER,
 	entries: {
-		'index.js': {
-			path: resolvePath(`test/${DUMMY_FOLDER}/index.js`),
-			type: 1,
-			name: 'index',
-			ext: 'js',
-		},
-		// eslint-disable-next-line id-length
-		a: {
-			path: resolvePath(`test/${DUMMY_FOLDER}/a`),
-			type: 0,
+		aaa: {
+			path: resolve(`test/${DUMMY_FOLDER}/aaa`),
+			type: FOLDER,
 			entries: {
-				'index.js': {
-					path: resolvePath(`test/${DUMMY_FOLDER}/a/index.js`),
-					type: 1,
-					name: 'index',
+				'bbb.min.js': {
+					path: resolve(`test/${DUMMY_FOLDER}/aaa/bbb.min.js`),
+					type: FILE,
+					name: 'bbb.min',
 					ext: 'js',
 				},
 			},
 		},
-		// eslint-disable-next-line id-length
-		b: {
-			path: resolvePath(`test/${DUMMY_FOLDER}/b`),
-			type: 0,
+		foo: {
+			path: resolve(`test/${DUMMY_FOLDER}/foo`),
+			type: FOLDER,
 			entries: {
-				'index.js': {
-					path: resolvePath(`test/${DUMMY_FOLDER}/b/index.js`),
-					type: 1,
-					name: 'index',
-					ext: 'js',
+				bar: {
+					path: resolve(`test/${DUMMY_FOLDER}/foo/bar`),
+					type: FOLDER,
+					entries: {
+						'baz.js': {
+							path: resolve(`test/${DUMMY_FOLDER}/foo/bar/baz.js`),
+							type: FILE,
+							name: 'baz',
+							ext: 'js',
+						},
+					},
 				},
 			},
+		},
+		empty: {
+			path: resolve(`test/${DUMMY_FOLDER}/empty`),
+			type: FOLDER,
+			entries: {},
+		},
+		'main.html': {
+			path: resolve(`test/${DUMMY_FOLDER}/main.html`),
+			type: FILE,
+			name: 'main',
+			ext: 'html',
 		},
 	},
 };

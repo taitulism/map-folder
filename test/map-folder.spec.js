@@ -1,4 +1,5 @@
-/* eslint-disable max-lines-per-function */
+const {unlink, writeFile} = require('fs');
+const {resolve} = require('path');
 const {expect} = require('chai');
 
 const expectedResult = require('./expected-result');
@@ -7,6 +8,22 @@ const {DUMMY_FOLDER} = require('./constants');
 const mapFolder = require('../index');
 
 describe('mapFolder', () => {
+	const gitkeepPath = resolve('./test/dummy-folder/empty/.gitkeep');
+
+	before((done) => {
+		unlink(gitkeepPath, (err) => {
+			if (err && !err.message.includes('ENOENT: no such file or directory')) throw err;
+			done();
+		});
+	});
+
+	after((done) => {
+		writeFile(gitkeepPath, '', (err) => {
+			if (err) throw err;
+			done();
+		});
+	});
+
 	it('is a function', () => {
 		expect(mapFolder).to.be.a('function');
 	});
