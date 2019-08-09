@@ -4,51 +4,49 @@
 
 mapFolder
 =========
-Generates a JSON object that reflects a folder structure.
+Asynchronously generate a JSON representation of a folder tree.
 
-Installation and usage
-----------------------
+Installation
+------------
 ```sh
-$ npm install --save map-folder
+$ npm install map-folder
 ```
 
+Usage
+-----
+Example folder tree:
+```
+└─ my-project
+   ├─ common
+   │  └─ util.js
+   └─ index.js
+```
+
+Create a folder map:
 ```js
 const mapFolder = require('map-folder');
-```
 
-```
-target-folder
-├─ utils
-│  └─ helper.js
-└─ index.js
-```
-
-
-```js
-mapFolder('path/to/target-folder', (err, result) => {
-    if (err) {
-        throw err;
-    }
-
+mapFolder('path/to/my-project').then((result) => {
     console.log(result);
 });
 ```
 
+Results:
 ```js
-const FOLDER = 0;
-const FILE   = 1;
-
-// Results:
+  /*
+  │ FOLDER = 0
+  │ FILE   = 1
+*/
 {
-    path: 'path/to/target-folder',
+    path: 'path/to/my-project',
     type: FOLDER,
     entries: {
-        'utils': {
-            path:'path/to/target-folder/utils',
+        'common': {
+            path:'path/to/my-project/common',
             type: FOLDER,
             entries: {
                 "helper.js": {
-                    path:'path/to/target-folder/utils/helper.js',
+                    path:'path/to/my-project/common/util.js',
                     type: FILE,
                     name: 'helper',
                     ext: 'js',
@@ -56,7 +54,7 @@ const FILE   = 1;
             }
         },
         'index.js': {
-            path:'path/to/target-folder/index.js',
+            path:'path/to/my-project/index.js',
             type: FILE,
             name: 'index',
             ext: 'js',
