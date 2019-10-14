@@ -28,6 +28,11 @@ describe('mapFolder', () => {
 		expect(mapFolder).to.be.a('function');
 	});
 
+	it('exports entery type constants', () => {
+		expect(mapFolder.FOLDER).to.equal(0);
+		expect(mapFolder.FILE).to.equal(1);
+	});
+
 	it('maps a given folder to a JSON', async () => {
 		let res;
 
