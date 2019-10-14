@@ -3,7 +3,7 @@
 	"version": "0.0.2",
 	"license": "MIT",
 	"author": "taitu.dev@gmail.com",
-	"description": "Asynchronously generate a JSON representation of a folder tree",
+	"description": "Create a JSON representation of a folder structure tree",
 	"main": "index.js",
 	"scripts": {
 		"dev": "mocha test/**/*.spec.js --watch",
