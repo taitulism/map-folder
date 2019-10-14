@@ -2,16 +2,20 @@ const {resolve} = require('path');
 
 const {DUMMY_FOLDER, FOLDER, FILE} = require('./constants');
 
+function testFolder (dummyPath) {
+	return resolve(`test/${DUMMY_FOLDER}/${dummyPath}`);
+}
+
 module.exports = {
-	path: resolve(`test/${DUMMY_FOLDER}`),
+	path: testFolder(''),
 	type: FOLDER,
 	entries: {
 		aaa: {
-			path: resolve(`test/${DUMMY_FOLDER}/aaa`),
+			path: testFolder('/aaa'),
 			type: FOLDER,
 			entries: {
 				'bbb.min.js': {
-					path: resolve(`test/${DUMMY_FOLDER}/aaa/bbb.min.js`),
+					path: testFolder('/aaa/bbb.min.js'),
 					type: FILE,
 					name: 'bbb.min',
 					ext: 'js',
@@ -19,15 +23,15 @@ module.exports = {
 			},
 		},
 		foo: {
-			path: resolve(`test/${DUMMY_FOLDER}/foo`),
+			path: testFolder('/foo'),
 			type: FOLDER,
 			entries: {
 				bar: {
-					path: resolve(`test/${DUMMY_FOLDER}/foo/bar`),
+					path: testFolder('/foo/bar'),
 					type: FOLDER,
 					entries: {
 						'baz.js': {
-							path: resolve(`test/${DUMMY_FOLDER}/foo/bar/baz.js`),
+							path: testFolder('/foo/bar/baz.js'),
 							type: FILE,
 							name: 'baz',
 							ext: 'js',
@@ -37,12 +41,12 @@ module.exports = {
 			},
 		},
 		empty: {
-			path: resolve(`test/${DUMMY_FOLDER}/empty`),
+			path: testFolder('/empty'),
 			type: FOLDER,
 			entries: {},
 		},
 		'main.html': {
-			path: resolve(`test/${DUMMY_FOLDER}/main.html`),
+			path: testFolder('/main.html'),
 			type: FILE,
 			name: 'main',
 			ext: 'html',
