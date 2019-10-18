@@ -9,7 +9,7 @@
 		"dev": "mocha test/**/*.spec.js --watch",
 		"check": "npm run lint && npm test",
 		"test": "mocha test/**/*.spec.js",
-		"lint": "eslint ./index.js ./lib ./test --ignore-pattern '/test/dummy-folder'",
+		"lint": "eslint ./index.js ./src ./test --ignore-pattern '/test/dummy-folder'",
 		"preversion": "npm run check",
 		"postversion": "git push && git push --tags"
 	},
