@@ -2,20 +2,11 @@ const {resolve, parse} = require('path');
 
 const mapFolder = require('./map-folder');
 const getEntryType = require('./get-entry-type');
-const logErr = require('./log-error');
 const {FILE, FOLDER} = require('./constants');
 
 module.exports = async function mapEntry (rawEntryPath) {
 	const entryPath = resolve(rawEntryPath);
-	let entryType;
-
-	try {
-		entryType = await getEntryType(entryPath);
-	}
-	catch (ex) {
-		logErr('mapFolder ERROR while getting stat for entry:', entryPath);
-		throw ex;
-	}
+	const entryType = await getEntryType(entryPath);
 
 	if (entryType === FILE) {
 		const {name, ext} = parse(entryPath);
@@ -28,12 +19,6 @@ module.exports = async function mapEntry (rawEntryPath) {
 		};
 	}
 	else if (entryType === FOLDER) {
-		try {
-			return await mapFolder(entryPath);
-		}
-		catch (ex) {
-			logErr('mapFolder ERROR while mapping a folder:', entryPath);
-			throw ex;
-		}
+		return mapFolder(entryPath);
 	}
 };

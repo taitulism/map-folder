@@ -1,6 +1,8 @@
 const {resolve} = require('path');
 
-const {DUMMY_FOLDER, FOLDER, FILE} = require('./constants');
+const {FOLDER, FILE} = require('./../index');
+
+const DUMMY_FOLDER = 'dummy-folder';
 
 function testFolder (dummyPath) {
 	return resolve(`test/${DUMMY_FOLDER}/${dummyPath}`);
