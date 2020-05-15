@@ -1,6 +1,6 @@
 {
 	"name": "map-folder",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"license": "MIT",
 	"author": "taitu.dev@gmail.com",
 	"description": "Create a JSON representation of a folder structure tree",
