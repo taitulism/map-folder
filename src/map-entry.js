@@ -5,18 +5,24 @@ const {FILE, FOLDER} = require('./constants');
 const getStat = require('./promised/get-stat');
 const readDir = require('./promised/read-dir');
 
-async function mapEntry (rawEntryPath) {
+async function mapEntry (rawEntryPath, ignore) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = await getEntryType(entryPath);
+	const {name, ext, base} = parse(entryPath);
+
+	if (ignore && shouldBeIgnored(base, ignore)) {
+		return null;
+	}
 
 	if (entryType === FILE) {
-		return createFileMap(entryPath);
+		return createFileMap(name, ext, entryPath);
 	}
 	else if (entryType === FOLDER) {
 		const folderMap = createFolderMap(entryPath);
 		const entries = await readDir(entryPath);
+		const entriesMaps = await mapEntries(entryPath, entries, ignore);
 
-		folderMap.entries = await mapEntries(entryPath, entries);
+		if (entriesMaps) folderMap.entries = entriesMaps;
 
 		return folderMap;
 	}
@@ -25,9 +31,14 @@ async function mapEntry (rawEntryPath) {
 function mapEntrySync (rawEntryPath) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = getEntryTypeSync(entryPath);
+	const {name, ext, base} = parse(entryPath);
+
+	// if (ignore && shouldBeIgnored(base, ignore)) {
+	// 	return null;
+	// }
 
 	if (entryType === FILE) {
-		return createFileMap(entryPath);
+		return createFileMap(name, ext, entryPath);
 	}
 	else if (entryType === FOLDER) {
 		const folderMap = createFolderMap(entryPath);
@@ -40,13 +51,13 @@ function mapEntrySync (rawEntryPath) {
 }
 
 
-function mapEntries (parentPath, entries) {
+function mapEntries (parentPath, entries, ignore) {
 	const entriesMap = {};
 	const promises = entries.map((entryName) => {
 		const entryPath = join(parentPath, entryName);
 
-		return mapEntry(entryPath).then((entryMap) => {
-			entriesMap[entryName] = entryMap;
+		return mapEntry(entryPath, ignore).then((entryMap) => {
+			if (entryMap) entriesMap[entryName] = entryMap;
 		});
 	});
 
@@ -82,9 +93,7 @@ function getEntryTypeSync (entryPath) {
 }
 
 
-function createFileMap (filePath) {
-	const {name, ext} = parse(filePath);
-
+function createFileMap (name, ext, filePath) {
 	return {
 		path: filePath,
 		type: FILE,
@@ -99,6 +108,32 @@ function createFolderMap (folderPath) {
 		type: FOLDER,
 		entries: {},
 	};
+}
+
+function shouldBeIgnored (name, ignore) {
+	const ignoreType = typeof ignore;
+
+	if (ignoreType == 'string') {
+		if (name.toLowerCase() === ignore.toLowerCase()) {
+			return true;
+		}
+	}
+	else if (ignoreType == 'function') {
+		return ignore(name);
+	}
+	else if (Array.isArray(ignore)) {
+		const len = ignore.length;
+
+		for (let i = 0; i < len; i++) {
+			const ignoreItem = ignore[i];
+
+			if (name.toLowerCase() === ignoreItem.toLowerCase()) {
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 module.exports = mapEntry;

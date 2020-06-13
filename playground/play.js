@@ -1,7 +1,10 @@
+/* eslint-disable */
 const mapFolder = require('../');
 
-const map = mapFolder.sync('./test/dummy-folder');
+const map = mapFolder('./test/dummy-folder', ['bbb.min.js', 'empty']);
 
-console.log(map);
+map.then((res) => {
+	console.log(res);
+});
 
-setTimeout(() => {}, 20000)
+setTimeout(() => {}, 20000);

@@ -5,7 +5,8 @@ const {resolve} = require('path');
 const {expect} = require('chai');
 
 const mapFolder = require('../index');
-const expectedResult = require('./expected-result');
+const getExpectedResult = require('./expected-result');
+const expectedResult = getExpectedResult();
 
 const DUMMY_FOLDER = 'dummy-folder';
 
@@ -78,5 +79,59 @@ describe('mapFolder', () => {
 		}
 
 		expect(res).to.deep.equal(expectedResult);
+	});
+
+	it('ignores a given item', async () => {
+		let res;
+
+		try {
+			res = await mapFolder(`./test/${DUMMY_FOLDER}`, 'aaa');
+		}
+		catch (ex) {
+			return expect(false).to.be.true;
+		}
+
+		const expected = getExpectedResult();
+
+		delete expected.entries.aaa;
+
+		return expect(res).to.deep.equal(expected);
+	});
+
+	it('ignores given list of items', async () => {
+		let res;
+
+		try {
+			res = await mapFolder(`./test/${DUMMY_FOLDER}`, ['bbb.min.js', 'empty']);
+		}
+		catch (ex) {
+			return expect(false).to.be.true;
+		}
+
+		const expected = getExpectedResult();
+
+		delete expected.entries.aaa.entries['bbb.min.js'];
+		delete expected.entries.empty;
+
+		return expect(res).to.deep.equal(expected);
+	});
+
+	it('ignores by a function', async () => {
+		let res;
+
+		try {
+			const ignore = name => name.includes('z');
+
+			res = await mapFolder(`./test/${DUMMY_FOLDER}`, ignore);
+		}
+		catch (ex) {
+			return expect(false).to.be.true;
+		}
+
+		const expected = getExpectedResult();
+
+		delete expected.entries.foo.entries.bar.entries['baz.js'];
+
+		return expect(res).to.deep.equal(expected);
 	});
 });
