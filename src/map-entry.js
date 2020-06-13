@@ -28,14 +28,14 @@ async function mapEntry (rawEntryPath, ignore) {
 	}
 }
 
-function mapEntrySync (rawEntryPath) {
+function mapEntrySync (rawEntryPath, ignore) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = getEntryTypeSync(entryPath);
 	const {name, ext, base} = parse(entryPath);
 
-	// if (ignore && shouldBeIgnored(base, ignore)) {
-	// 	return null;
-	// }
+	if (ignore && shouldBeIgnored(base, ignore)) {
+		return null;
+	}
 
 	if (entryType === FILE) {
 		return createFileMap(name, ext, entryPath);
@@ -43,8 +43,9 @@ function mapEntrySync (rawEntryPath) {
 	else if (entryType === FOLDER) {
 		const folderMap = createFolderMap(entryPath);
 		const entries = readdirSync(entryPath);
+		const entriesMaps = mapEntriesSync(entryPath, entries, ignore);
 
-		folderMap.entries = mapEntriesSync(entryPath, entries);
+		if (entriesMaps) folderMap.entries = entriesMaps;
 
 		return folderMap;
 	}
@@ -64,14 +65,14 @@ function mapEntries (parentPath, entries, ignore) {
 	return Promise.all(promises).then(() => entriesMap);
 }
 
-function mapEntriesSync (parentPath, entries) {
+function mapEntriesSync (parentPath, entries, ignore) {
 	const entriesMap = {};
 
 	entries.forEach((entryName) => {
 		const entryPath = join(parentPath, entryName);
-		const entryMap = mapEntrySync(entryPath);
+		const entryMap = mapEntrySync(entryPath, ignore);
 
-		entriesMap[entryName] = entryMap;
+		if (entryMap) entriesMap[entryName] = entryMap;
 	});
 
 	return entriesMap;

@@ -81,57 +81,113 @@ describe('mapFolder', () => {
 		expect(res).to.deep.equal(expectedResult);
 	});
 
-	it('ignores a given item', async () => {
-		let res;
+	describe('ignore', () => {
+		it('ignores a given item', async () => {
+			let res;
 
-		try {
-			res = await mapFolder(`./test/${DUMMY_FOLDER}`, 'aaa');
-		}
-		catch (ex) {
-			return expect(false).to.be.true;
-		}
+			try {
+				res = await mapFolder(`./test/${DUMMY_FOLDER}`, 'aaa');
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
 
-		const expected = getExpectedResult();
+			const expected = getExpectedResult();
 
-		delete expected.entries.aaa;
+			delete expected.entries.aaa;
 
-		return expect(res).to.deep.equal(expected);
-	});
+			return expect(res).to.deep.equal(expected);
+		});
 
-	it('ignores given list of items', async () => {
-		let res;
+		it('ignores a given item (sync)', () => {
+			let res;
 
-		try {
-			res = await mapFolder(`./test/${DUMMY_FOLDER}`, ['bbb.min.js', 'empty']);
-		}
-		catch (ex) {
-			return expect(false).to.be.true;
-		}
+			try {
+				res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, 'aaa');
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
 
-		const expected = getExpectedResult();
+			const expected = getExpectedResult();
 
-		delete expected.entries.aaa.entries['bbb.min.js'];
-		delete expected.entries.empty;
+			delete expected.entries.aaa;
 
-		return expect(res).to.deep.equal(expected);
-	});
+			expect(res).to.deep.equal(expected);
+		});
 
-	it('ignores by a function', async () => {
-		let res;
+		it('ignores given list of items', async () => {
+			let res;
 
-		try {
-			const ignore = name => name.includes('z');
+			try {
+				res = await mapFolder(`./test/${DUMMY_FOLDER}`, ['bbb.min.js', 'empty']);
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
 
-			res = await mapFolder(`./test/${DUMMY_FOLDER}`, ignore);
-		}
-		catch (ex) {
-			return expect(false).to.be.true;
-		}
+			const expected = getExpectedResult();
 
-		const expected = getExpectedResult();
+			delete expected.entries.aaa.entries['bbb.min.js'];
+			delete expected.entries.empty;
 
-		delete expected.entries.foo.entries.bar.entries['baz.js'];
+			return expect(res).to.deep.equal(expected);
+		});
 
-		return expect(res).to.deep.equal(expected);
+		it('ignores given list of items (sync)', () => {
+			let res;
+
+			try {
+				res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, ['bbb.min.js', 'empty']);
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
+
+			const expected = getExpectedResult();
+
+			delete expected.entries.aaa.entries['bbb.min.js'];
+			delete expected.entries.empty;
+
+			expect(res).to.deep.equal(expected);
+		});
+
+		it('ignores by a function', async () => {
+			let res;
+
+			try {
+				const ignore = name => name.includes('z');
+
+				res = await mapFolder(`./test/${DUMMY_FOLDER}`, ignore);
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
+
+			const expected = getExpectedResult();
+
+			delete expected.entries.foo.entries.bar.entries['baz.js'];
+
+			return expect(res).to.deep.equal(expected);
+		});
+
+		it('ignores by a function (sync)', () => {
+			let res;
+
+			try {
+				const ignore = name => name.includes('z');
+
+				res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignore);
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
+
+			const expected = getExpectedResult();
+
+			delete expected.entries.foo.entries.bar.entries['baz.js'];
+
+			expect(res).to.deep.equal(expected);
+		});
 	});
 });
