@@ -66,4 +66,17 @@ describe('mapFolder', () => {
 
 		return expect(res).to.deep.equal(expectedResult);
 	});
+
+	it('has a synchronous version', () => {
+		let res;
+
+		try {
+			res = mapFolder.sync(`./test/${DUMMY_FOLDER}`);
+		}
+		catch (ex) {
+			throw expect(false).to.be.true;
+		}
+
+		expect(res).to.deep.equal(expectedResult);
+	});
 });
