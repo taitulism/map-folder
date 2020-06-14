@@ -86,23 +86,49 @@ describe('mapFolder', () => {
 				return expect(res).to.deep.equal(expected);
 			});
 
-			it('ignores by a function', async () => {
-				let res;
+			describe('ignore function', () => {
+				it('ignores by a function', async () => {
+					let res;
 
-				try {
-					const ignore = name => name.includes('z');
+					try {
+						const ignore = name => name.includes('z');
 
-					res = await mapFolder(`./test/${DUMMY_FOLDER}`, ignore);
-				}
-				catch (ex) {
-					return expect(false).to.be.true;
-				}
+						res = await mapFolder(`./test/${DUMMY_FOLDER}`, ignore);
+					}
+					catch (ex) {
+						return expect(false).to.be.true;
+					}
 
-				const expected = getExpectedResult();
+					const expected = getExpectedResult();
 
-				delete expected.entries.foo.entries.bar.entries['baz.js'];
+					delete expected.entries.foo.entries.bar.entries['baz.js'];
 
-				return expect(res).to.deep.equal(expected);
+					return expect(res).to.deep.equal(expected);
+				});
+
+				it('accepts 3 arguments', async () => {
+					const expected = [
+						'dummy-folder', // 1
+						'aaa',          // 2
+						'empty',        // 3
+						'foo',          // 4
+						'main.html',    // 5
+						'bbb.min.js',   // 6
+						'bar',          // 7
+						'baz.js',       // 8
+					];
+
+					let i = 0;
+
+					const ignoreFn = (base) => {
+						expect(expected.indexOf(base)).to.be.above(-1);
+						i++;
+					};
+
+					await mapFolder(`./test/${DUMMY_FOLDER}`, ignoreFn);
+
+					return expect(i).to.equal(8);
+				});
 			});
 		});
 
@@ -188,24 +214,49 @@ describe('mapFolder', () => {
 
 				expect(res).to.deep.equal(expected);
 			});
+			describe('ignore function', () => {
+				it('ignores by a function', () => {
+					let res;
 
-			it('ignores by a function', () => {
-				let res;
+					try {
+						const ignore = name => name.includes('z');
 
-				try {
-					const ignore = name => name.includes('z');
+						res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignore);
+					}
+					catch (ex) {
+						return expect(false).to.be.true;
+					}
 
-					res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignore);
-				}
-				catch (ex) {
-					return expect(false).to.be.true;
-				}
+					const expected = getExpectedResult();
 
-				const expected = getExpectedResult();
+					delete expected.entries.foo.entries.bar.entries['baz.js'];
 
-				delete expected.entries.foo.entries.bar.entries['baz.js'];
+					expect(res).to.deep.equal(expected);
+				});
 
-				expect(res).to.deep.equal(expected);
+				it('accepts 3 arguments', () => {
+					const expected = [
+						'dummy-folder', // 1
+						'aaa',          // 2
+						'empty',        // 3
+						'foo',          // 4
+						'main.html',    // 5
+						'bbb.min.js',   // 6
+						'bar',          // 7
+						'baz.js',       // 8
+					];
+
+					let i = 0;
+
+					const ignoreFn = (base) => {
+						expect(expected.indexOf(base)).to.be.above(-1);
+						i++;
+					};
+
+					mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignoreFn);
+
+					return expect(i).to.equal(8);
+				});
 			});
 		});
 
