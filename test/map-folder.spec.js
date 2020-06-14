@@ -9,6 +9,7 @@ const getExpectedResult = require('./expected-result');
 const expectedResult = getExpectedResult();
 
 const DUMMY_FOLDER = 'dummy-folder';
+const NOT_FOUND = -1;
 
 describe('mapFolder', () => {
 	const gitkeepPath = resolve('./test/dummy-folder/empty/.gitkeep');
@@ -121,13 +122,13 @@ describe('mapFolder', () => {
 					let i = 0;
 
 					const ignoreFn = (base) => {
-						expect(expected.indexOf(base)).to.be.above(-1);
+						expect(expected.indexOf(base)).to.be.above(NOT_FOUND);
 						i++;
 					};
 
 					await mapFolder(`./test/${DUMMY_FOLDER}`, ignoreFn);
 
-					return expect(i).to.equal(8);
+					return expect(i).to.equal(expected.length);
 				});
 			});
 		});
@@ -249,13 +250,13 @@ describe('mapFolder', () => {
 					let i = 0;
 
 					const ignoreFn = (base) => {
-						expect(expected.indexOf(base)).to.be.above(-1);
+						expect(expected.indexOf(base)).to.be.above(NOT_FOUND);
 						i++;
 					};
 
 					mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignoreFn);
 
-					return expect(i).to.equal(8);
+					return expect(i).to.equal(expected.length);
 				});
 			});
 		});

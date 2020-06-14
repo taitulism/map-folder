@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 const {statSync, readdirSync} = require('fs');
 const {resolve, parse, join} = require('path');
 
