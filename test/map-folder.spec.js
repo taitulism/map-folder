@@ -11,7 +11,7 @@ const expectedResult = getExpectedResult();
 const DUMMY_FOLDER = 'dummy-folder';
 const NOT_FOUND = -1;
 
-describe('mapFolder', () => {
+describe('map-folder', () => {
 	const gitkeepPath = resolve('./test/dummy-folder/empty/.gitkeep');
 
 	before((done) => {

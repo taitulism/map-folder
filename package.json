@@ -23,7 +23,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/taitulism/mapFolder"
+		"url": "https://github.com/taitulism/map-folder"
 	},
 	"devDependencies": {
 		"chai": "4.2.0",

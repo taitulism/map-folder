@@ -1,8 +1,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://travis-ci.org/taitulism/mapFolder.svg?branch=develop)](https://travis-ci.org/taitulism/mapFolder)
+[![Build Status](https://travis-ci.org/taitulism/map-folder.svg?branch=develop)](https://travis-ci.org/taitulism/map-folder)
 
-mapFolder
-=========
+map-folder
+==========
 Create a JSON representation of a folder structure tree.
 
 Installation
