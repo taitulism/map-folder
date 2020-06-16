@@ -88,13 +88,13 @@ describe('map-folder', () => {
 			});
 
 			describe('ignore function', () => {
-				it('ignores by a function', async () => {
+				it('works as a predicate function', async () => {
 					let res;
 
 					try {
-						const ignore = name => name.includes('z');
+						const filter = ({base}) => !base.includes('z');
 
-						res = await mapFolder(`./test/${DUMMY_FOLDER}`, ignore);
+						res = await mapFolder(`./test/${DUMMY_FOLDER}`, filter);
 					}
 					catch (ex) {
 						return expect(false).to.be.true;
@@ -107,7 +107,7 @@ describe('map-folder', () => {
 					return expect(res).to.deep.equal(expected);
 				});
 
-				it('accepts 3 arguments', async () => {
+				it('accepts `pathObj` argument', async () => {
 					const expected = [
 						'dummy-folder', // 1
 						'aaa',          // 2
@@ -121,9 +121,11 @@ describe('map-folder', () => {
 
 					let i = 0;
 
-					const ignoreFn = (base) => {
+					const ignoreFn = ({base}) => {
 						expect(expected.indexOf(base)).to.be.above(NOT_FOUND);
 						i++;
+
+						return true;
 					};
 
 					await mapFolder(`./test/${DUMMY_FOLDER}`, ignoreFn);
@@ -216,13 +218,13 @@ describe('map-folder', () => {
 				expect(res).to.deep.equal(expected);
 			});
 			describe('ignore function', () => {
-				it('ignores by a function', () => {
+				it('works as a predicate function', () => {
 					let res;
 
 					try {
-						const ignore = name => name.includes('z');
+						const filter = ({base}) => !base.includes('z');
 
-						res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignore);
+						res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, filter);
 					}
 					catch (ex) {
 						return expect(false).to.be.true;
@@ -235,7 +237,7 @@ describe('map-folder', () => {
 					expect(res).to.deep.equal(expected);
 				});
 
-				it('accepts 3 arguments', () => {
+				it('accepts `pathObj` argument', () => {
 					const expected = [
 						'dummy-folder', // 1
 						'aaa',          // 2
@@ -249,9 +251,11 @@ describe('map-folder', () => {
 
 					let i = 0;
 
-					const ignoreFn = (base) => {
+					const ignoreFn = ({base}) => {
 						expect(expected.indexOf(base)).to.be.above(NOT_FOUND);
 						i++;
+
+						return true;
 					};
 
 					mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignoreFn);

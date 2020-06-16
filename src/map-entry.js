@@ -9,14 +9,14 @@ const readDir = require('./promised/read-dir');
 async function mapEntry (rawEntryPath, ignore) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = await getEntryType(entryPath);
-	const {name, ext, base} = parse(entryPath);
+	const pathObj = parse(entryPath);
 
-	if (ignore && shouldBeIgnored(base, ignore)) {
+	if (ignore && shouldBeIgnored(pathObj, ignore)) {
 		return null;
 	}
 
 	if (entryType === FILE) {
-		return createFileMap(name, ext, entryPath);
+		return createFileMap(entryPath, pathObj);
 	}
 	else if (entryType === FOLDER) {
 		const folderMap = createFolderMap(entryPath);
@@ -32,14 +32,14 @@ async function mapEntry (rawEntryPath, ignore) {
 function mapEntrySync (rawEntryPath, ignore) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = getEntryTypeSync(entryPath);
-	const {name, ext, base} = parse(entryPath);
+	const pathObj = parse(entryPath);
 
-	if (ignore && shouldBeIgnored(base, ignore)) {
+	if (ignore && shouldBeIgnored(pathObj, ignore)) {
 		return null;
 	}
 
 	if (entryType === FILE) {
-		return createFileMap(name, ext, entryPath);
+		return createFileMap(entryPath, pathObj);
 	}
 	else if (entryType === FOLDER) {
 		const folderMap = createFolderMap(entryPath);
@@ -95,7 +95,7 @@ function getEntryTypeSync (entryPath) {
 }
 
 
-function createFileMap (name, ext, filePath) {
+function createFileMap (filePath, {name, ext}) {
 	return {
 		path: filePath,
 		type: FILE,
@@ -112,16 +112,17 @@ function createFolderMap (folderPath) {
 	};
 }
 
-function shouldBeIgnored (name, ignore) {
+function shouldBeIgnored (pathObj, ignore) {
 	const ignoreType = typeof ignore;
 
 	if (ignoreType == 'string') {
-		if (name.toLowerCase() === ignore.toLowerCase()) {
+		if (pathObj.base.toLowerCase() === ignore.toLowerCase()) {
 			return true;
 		}
 	}
 	else if (ignoreType == 'function') {
-		return ignore(name);
+		// used as a predicate function (like filter)
+		return !ignore(pathObj);
 	}
 	else if (Array.isArray(ignore)) {
 		const len = ignore.length;
@@ -129,7 +130,7 @@ function shouldBeIgnored (name, ignore) {
 		for (let i = 0; i < len; i++) {
 			const ignoreItem = ignore[i];
 
-			if (name.toLowerCase() === ignoreItem.toLowerCase()) {
+			if (pathObj.base.toLowerCase() === ignoreItem.toLowerCase()) {
 				return true;
 			}
 		}

@@ -73,8 +73,8 @@ Example results:
 ## async - `mapFolder(path, ignore)`
 ## sync - `mapFolder.sync(path, ignore)`
 ### Arguments:
-* **path** - `String` - A path to an existing folder.
-* **ignore** - `String | String[] | (basename) => boolean` - exclude items mechanism.
+* **path** - A path to an existing folder.
+* **ignore** - Exclude items mechanism. Read more below.
 
 ### Return:
 A JSON object or a promise for that object. 
@@ -99,18 +99,35 @@ if (result.entries.myApp.type === FOLDER) // ...
 ```
 > There are other entry types, like symlinks, but currently out of this module's scope.
 
+&nbsp;
 
-### Ignore
+## Ignore
+---------
+`String | String[] | () => boolean`
+
 To exclude entries (files and folder) you can use the `ignore` argument.
+
 It could be a string or an array of strings you would like to skip when mapping. Like `node_modules` for example.
-You could also use a function . This function will get called for every entry in the target folder, recursively. Its argument is the entry name (and extension, if file) and should return a `boolean` (`shouldIgnore`).
+
+You could also use it as a predicate function. This function will get called for every entry in the target folder, recursively. Its argument is an object and it should return a `boolean`.
+
+The object argument will have the following properties (all are strings):
+* dir
+* root
+* base
+* name
+* ext
+
+> This object is the result of Node's `path.parse()` method. [See docs](https://nodejs.org/api/path.html#path_path_parse_path).
+
+Return `true` to map the current entry or `false` to skip it.
 
 ```js
 const path = 'path/to/my-project';
 
 mapFolder(path, 'node_modules')
-// or
 mapFolder(path, ['node_modules', 'my-passwords.txt'])
-// or
-mapFolder(path, (entryName) => entryName.startsWith('.'))
+
+// exclude a sensitive folder
+mapFolder(path, ({name}) => name !== 'secrets'))
 ```
