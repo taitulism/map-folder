@@ -10,22 +10,17 @@ async function mapEntry (rawEntryPath, ignore) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = await getEntryType(entryPath);
 	const pathObj = parse(entryPath);
+	const entryMap = createEntryMap(entryPath, entryType, pathObj);
 
-	if (ignore && shouldBeIgnored(pathObj, ignore)) {
-		return null;
-	}
-
-	if (entryType === FILE) {
-		return createFileMap(entryPath, pathObj);
-	}
-	else if (entryType === FOLDER) {
-		const folderMap = createFolderMap(entryPath);
+	if (shouldBeIgnored(entryMap, ignore)) return null;
+	if (entryType === FILE) return entryMap;
+	if (entryType === FOLDER) {
 		const entries = await readDir(entryPath);
 		const entriesMaps = await mapEntries(entryPath, entries, ignore);
 
-		if (entriesMaps) folderMap.entries = entriesMaps;
+		if (entriesMaps) entryMap.entries = entriesMaps;
 
-		return folderMap;
+		return entryMap;
 	}
 }
 
@@ -33,22 +28,17 @@ function mapEntrySync (rawEntryPath, ignore) {
 	const entryPath = resolve(rawEntryPath);
 	const entryType = getEntryTypeSync(entryPath);
 	const pathObj = parse(entryPath);
+	const entryMap = createEntryMap(entryPath, entryType, pathObj);
 
-	if (ignore && shouldBeIgnored(pathObj, ignore)) {
-		return null;
-	}
-
-	if (entryType === FILE) {
-		return createFileMap(entryPath, pathObj);
-	}
-	else if (entryType === FOLDER) {
-		const folderMap = createFolderMap(entryPath);
+	if (shouldBeIgnored(entryMap, ignore)) return null;
+	if (entryType === FILE) return entryMap;
+	if (entryType === FOLDER) {
 		const entries = readdirSync(entryPath);
 		const entriesMaps = mapEntriesSync(entryPath, entries, ignore);
 
-		if (entriesMaps) folderMap.entries = entriesMaps;
+		if (entriesMaps) entryMap.entries = entriesMaps;
 
-		return folderMap;
+		return entryMap;
 	}
 }
 
@@ -95,28 +85,32 @@ function getEntryTypeSync (entryPath) {
 }
 
 
-function createFileMap (filePath, {name, ext}) {
-	return {
-		path: filePath,
-		type: FILE,
-		name,
-		ext: ext.substr(1),
+function createEntryMap (entryPath, entryType, pathObj) {
+	const {base, name, ext} = pathObj;
+	const entryMap = {
+		path: entryPath,
+		type: entryType,
 	};
-}
 
-function createFolderMap (folderPath) {
-	return {
-		path: folderPath,
-		type: FOLDER,
-		entries: {},
-	};
+	if (entryType === FILE) {
+		entryMap.name = base;
+		entryMap.base = name;
+		entryMap.ext = ext.substr(1);
+	}
+	else if (entryType === FOLDER) {
+		entryMap.name = base;
+	}
+
+	return entryMap;
 }
 
 function shouldBeIgnored (pathObj, ignore) {
+	if (!ignore) return false;
+
 	const ignoreType = typeof ignore;
 
 	if (ignoreType == 'string') {
-		if (pathObj.base.toLowerCase() === ignore.toLowerCase()) {
+		if (pathObj.name.toLowerCase() === ignore.toLowerCase()) {
 			return true;
 		}
 	}
@@ -130,7 +124,7 @@ function shouldBeIgnored (pathObj, ignore) {
 		for (let i = 0; i < len; i++) {
 			const ignoreItem = ignore[i];
 
-			if (pathObj.base.toLowerCase() === ignoreItem.toLowerCase()) {
+			if (pathObj.name.toLowerCase() === ignoreItem.toLowerCase()) {
 				return true;
 			}
 		}

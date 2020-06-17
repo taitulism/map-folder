@@ -92,7 +92,7 @@ describe('map-folder', () => {
 					let res;
 
 					try {
-						const filter = ({base}) => !base.includes('z');
+						const filter = ({name}) => !name.includes('z');
 
 						res = await mapFolder(`./test/${DUMMY_FOLDER}`, filter);
 					}
@@ -121,8 +121,8 @@ describe('map-folder', () => {
 
 					let i = 0;
 
-					const ignoreFn = ({base}) => {
-						expect(expected.indexOf(base)).to.be.above(NOT_FOUND);
+					const ignoreFn = ({name}) => {
+						expect(expected.indexOf(name)).to.be.above(NOT_FOUND);
 						i++;
 
 						return true;
@@ -135,7 +135,6 @@ describe('map-folder', () => {
 			});
 		});
 
-
 		it('can map a file', () => {
 			const filePath = `./test/${DUMMY_FOLDER}/main.html`;
 
@@ -145,7 +144,8 @@ describe('map-folder', () => {
 				expect(res).to.deep.equal({
 					path: resolve(filePath),
 					type: mapFolder.FILE,
-					name: 'main',
+					name: 'main.html',
+					base: 'main',
 					ext: 'html',
 				});
 			}
@@ -217,12 +217,13 @@ describe('map-folder', () => {
 
 				expect(res).to.deep.equal(expected);
 			});
+
 			describe('ignore function', () => {
 				it('works as a predicate function', () => {
 					let res;
 
 					try {
-						const filter = ({base}) => !base.includes('z');
+						const filter = ({name}) => !name.includes('z');
 
 						res = mapFolder.sync(`./test/${DUMMY_FOLDER}`, filter);
 					}
@@ -251,8 +252,8 @@ describe('map-folder', () => {
 
 					let i = 0;
 
-					const ignoreFn = ({base}) => {
-						expect(expected.indexOf(base)).to.be.above(NOT_FOUND);
+					const ignoreFn = ({name}) => {
+						expect(expected.indexOf(name)).to.be.above(NOT_FOUND);
 						i++;
 
 						return true;
@@ -272,7 +273,8 @@ describe('map-folder', () => {
 				.then(res => expect(res).to.deep.equal({
 					path: resolve(filePath),
 					type: mapFolder.FILE,
-					name: 'main',
+					name: 'main.html',
+					base: 'main',
 					ext: 'html',
 				}))
 				.catch(() => expect(false).to.be.true);
