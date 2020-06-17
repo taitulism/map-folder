@@ -43,17 +43,20 @@ Example folder structure:
 Example results:
 ```js
 {
+    name: 'my-project',
     path: 'path/to/my-project',
     type: FOLDER,
     entries: {
         'common': {
+            name: 'common',
             path:'path/to/my-project/common',
             type: FOLDER,
             entries: {
-                "helper.js": {
+                "utils.js": {
+                    name: 'utils.js',
                     path:'path/to/my-project/common/utils.js',
                     type: FILE,
-                    name: 'helper',
+                    base: 'utils',
                     ext: 'js',
                 }
             }
@@ -61,7 +64,8 @@ Example results:
         'index.js': {
             path:'path/to/my-project/index.js',
             type: FILE,
-            name: 'index',
+            name: 'index.js',
+            base: 'index',
             ext: 'js',
         }
     }
@@ -80,16 +84,16 @@ Example results:
 A JSON object or a promise for that object. 
 
 Every entry in the result (including the result itself) holds the following properties:  
-* `path`: String - The absolute path to the entry.
-* `type`: Number - A file or a folder (enum):
-    * **FOLDER** - 0  
-    Folders have another property:
-        * `entries`: Object - An object of the folder's child entries (sub-folders and files). Object keys are the entries folder/file name.
+* `name`: String - The whole entry name. Includes file extensions.
+* `path`: String - the absolute path to the entry.
+* `type`: Enum | Number - a file or a folder.
 
-    * **FILE** - 1  
-    Files also have the following properties:
-        * `name`: String - The file name without extension.
-        * `ext`: String - The file extension without a dot.
+Each type has its own additional properties:
+* **FOLDER** - 0
+    * `entries`: Object - An object of the folder's child entries (sub-folders and files).
+* **FILE** - 1
+    * `base`: String - The file name without the extension.
+    * `ext`: String - The file extension without a dot.
 
 You can use the exported `FILE` and `FOLDER` constants as types to check entry type:
 ```js
@@ -97,7 +101,7 @@ const {FILE, FOLDER} = require('map-folder');
 
 if (result.entries.myApp.type === FOLDER) // ...
 ```
-> There are other entry types, like symlinks, but currently out of this module's scope.
+> There are other entry types like symlinks, currently out of this module's scope.
 
 &nbsp;
 
@@ -107,20 +111,13 @@ if (result.entries.myApp.type === FOLDER) // ...
 
 To exclude entries (files and folder) you can use the `ignore` argument.
 
-It could be a string or an array of strings you would like to skip when mapping. Like `node_modules` for example.
+It could be a string or an array of strings you would like to skip when mapping. Like `node_modules` for example. They are compared with the entry's `name` property.
 
-You could also use it as a predicate function. This function will get called for every entry in the target folder, recursively. Its argument is an object and it should return a `boolean`.
+You could also use it as a predicate function. This function will get called for every entry in the target folder, recursively. Its argument is an entry map object (see above).
 
-The object argument will have the following properties (all are strings):
-* dir
-* root
-* base
-* name
-* ext
+> Folders will not have the `entries` property at this point.
 
-> This object is the result of Node's `path.parse()` method. [See docs](https://nodejs.org/api/path.html#path_path_parse_path).
-
-Return `true` to map the current entry or `false` to skip it.
+The predicate function should return a `boolean`. Return `true` to map the current entry or `false` to skip it.
 
 ```js
 const path = 'path/to/my-project';
@@ -129,5 +126,10 @@ mapFolder(path, 'node_modules')
 mapFolder(path, ['node_modules', 'my-passwords.txt'])
 
 // exclude a sensitive folder
-mapFolder(path, ({name}) => name !== 'secrets'))
+mapFolder(path, (entry) => {
+    if (entry.type === FOLDER && entry.name === 'secrets') {
+        return false;
+    }
+    return true;
+});
 ```
