@@ -52,137 +52,6 @@ describe('map-folder', () => {
 		});
 
 		describe('ignore', () => {
-			it('ignores a given item', async () => {
-				let res;
-
-				try {
-					res = await mapFolder(`./test/${DUMMY_FOLDER}`, 'aaa');
-				}
-				catch (ex) {
-					return expect(false).to.be.true;
-				}
-
-				const expected = getExpectedResult();
-
-				delete expected.entries.aaa;
-
-				return expect(res).to.deep.equal(expected);
-			});
-
-			it('ignores given list of items', async () => {
-				let res;
-
-				try {
-					res = await mapFolder(`./test/${DUMMY_FOLDER}`, ['bbb.min.js', 'empty']);
-				}
-				catch (ex) {
-					return expect(false).to.be.true;
-				}
-
-				const expected = getExpectedResult();
-
-				delete expected.entries.aaa.entries['bbb.min.js'];
-				delete expected.entries.empty;
-
-				return expect(res).to.deep.equal(expected);
-			});
-
-			describe('ignore function', () => {
-				it('works as a predicate function', async () => {
-					let res;
-
-					try {
-						const filter = ({name}) => !name.includes('z');
-
-						res = await mapFolder(`./test/${DUMMY_FOLDER}`, filter);
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					const expected = getExpectedResult();
-
-					delete expected.entries.foo.entries.bar.entries['baz.js'];
-
-					return expect(res).to.deep.equal(expected);
-				});
-
-				it('accepts `pathObj` argument', async () => {
-					const expected = [
-						'dummy-folder', // 1
-						'aaa',          // 2
-						'empty',        // 3
-						'foo',          // 4
-						'main.html',    // 5
-						'bbb.min.js',   // 6
-						'bar',          // 7
-						'baz.js',       // 8
-					];
-
-					let i = 0;
-
-					const ignoreFn = ({name}) => {
-						expect(expected.indexOf(name)).to.be.above(NOT_FOUND);
-						i++;
-
-						return true;
-					};
-
-					await mapFolder(`./test/${DUMMY_FOLDER}`, ignoreFn);
-
-					return expect(i).to.equal(expected.length);
-				});
-			});
-		});
-
-		it('can map a file', () => {
-			const filePath = `./test/${DUMMY_FOLDER}/main.html`;
-
-			try {
-				const res = mapFolder.sync(filePath);
-
-				expect(res).to.deep.equal({
-					path: resolve(filePath),
-					type: mapFolder.FILE,
-					name: 'main.html',
-					base: 'main',
-					ext: 'html',
-				});
-			}
-			catch (err) {
-				return expect(false).to.be.true;
-			}
-		});
-
-		it('throws when given path does not exist', () => {
-			try {
-				mapFolder.sync('./test/not/exist');
-			}
-			catch (err) {
-				expect(err.message).to.include('ENOENT: no such file or directory');
-			}
-		});
-	});
-
-	describe('async', () => {
-		it('is a function', () => {
-			expect(mapFolder).to.be.a('function');
-		});
-
-		it('maps a given folder to a JSON', async () => {
-			let res;
-
-			try {
-				res = await mapFolder(`./test/${DUMMY_FOLDER}`);
-			}
-			catch (ex) {
-				return expect(false).to.be.true;
-			}
-
-			return expect(res).to.deep.equal(expectedResult);
-		});
-
-		describe('ignore', () => {
 			it('ignores a given item', () => {
 				let res;
 
@@ -260,6 +129,137 @@ describe('map-folder', () => {
 					};
 
 					mapFolder.sync(`./test/${DUMMY_FOLDER}`, ignoreFn);
+
+					return expect(i).to.equal(expected.length);
+				});
+			});
+		});
+
+		it('can map a file', () => {
+			const filePath = `./test/${DUMMY_FOLDER}/main.html`;
+
+			try {
+				const res = mapFolder.sync(filePath);
+
+				expect(res).to.deep.equal({
+					path: resolve(filePath),
+					type: mapFolder.FILE,
+					name: 'main.html',
+					base: 'main',
+					ext: 'html',
+				});
+			}
+			catch (err) {
+				return expect(false).to.be.true;
+			}
+		});
+
+		it('throws when given path does not exist', () => {
+			try {
+				mapFolder.sync('./test/not/exist');
+			}
+			catch (err) {
+				expect(err.message).to.include('ENOENT: no such file or directory');
+			}
+		});
+	});
+
+	describe('async', () => {
+		it('is a function', () => {
+			expect(mapFolder).to.be.a('function');
+		});
+
+		it('maps a given folder to a JSON', async () => {
+			let res;
+
+			try {
+				res = await mapFolder(`./test/${DUMMY_FOLDER}`);
+			}
+			catch (ex) {
+				return expect(false).to.be.true;
+			}
+
+			return expect(res).to.deep.equal(expectedResult);
+		});
+
+		describe('ignore', () => {
+			it('ignores a given item', async () => {
+				let res;
+
+				try {
+					res = await mapFolder(`./test/${DUMMY_FOLDER}`, 'aaa');
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
+
+				const expected = getExpectedResult();
+
+				delete expected.entries.aaa;
+
+				return expect(res).to.deep.equal(expected);
+			});
+
+			it('ignores given list of items', async () => {
+				let res;
+
+				try {
+					res = await mapFolder(`./test/${DUMMY_FOLDER}`, ['bbb.min.js', 'empty']);
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
+
+				const expected = getExpectedResult();
+
+				delete expected.entries.aaa.entries['bbb.min.js'];
+				delete expected.entries.empty;
+
+				return expect(res).to.deep.equal(expected);
+			});
+
+			describe('ignore function', () => {
+				it('works as a predicate function', async () => {
+					let res;
+
+					try {
+						const filter = ({name}) => !name.includes('z');
+
+						res = await mapFolder(`./test/${DUMMY_FOLDER}`, filter);
+					}
+					catch (ex) {
+						return expect(false).to.be.true;
+					}
+
+					const expected = getExpectedResult();
+
+					delete expected.entries.foo.entries.bar.entries['baz.js'];
+
+					return expect(res).to.deep.equal(expected);
+				});
+
+				it('accepts `pathObj` argument', async () => {
+					const expected = [
+						'dummy-folder', // 1
+						'aaa',          // 2
+						'empty',        // 3
+						'foo',          // 4
+						'main.html',    // 5
+						'bbb.min.js',   // 6
+						'bar',          // 7
+						'baz.js',       // 8
+					];
+
+					let i = 0;
+
+					const ignoreFn = ({name}) => {
+						expect(expected.indexOf(name)).to.be.above(NOT_FOUND);
+						i++;
+
+						return true;
+					};
+
+					await mapFolder(`./test/${DUMMY_FOLDER}`, ignoreFn);
 
 					return expect(i).to.equal(expected.length);
 				});
