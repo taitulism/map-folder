@@ -1,6 +1,6 @@
 const {resolve} = require('path');
 
-const {FOLDER, FILE} = require('./../index');
+const {FOLDER, FILE} = require('../index');
 
 const DUMMY_FOLDER = 'dummy-folder';
 

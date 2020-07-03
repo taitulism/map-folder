@@ -9,7 +9,7 @@ const getTestFolderPath = require('./expected-results/get-test-folder-path');
 
 const NOT_FOUND = -1;
 
-describe('map-folder', () => {
+describe('map-folder-sync', () => {
 	const gitkeepPath = getTestFolderPath('/notes/empty/.gitkeep');
 
 	before((done) => {
@@ -31,83 +31,91 @@ describe('map-folder', () => {
 		expect(mapFolder.FILE).to.equal(1);
 	});
 
-	describe('async', () => {
+	describe('sync', () => {
 		it('can map a single file', () => {
-			return mapFolder(getTestFolderPath('article.doc'))
-				.then(res => expect(res).to.deep.equal(getExpectedResultFor('file')))
-				.catch(() => expect(false).to.be.true);
-		});
-
-		it('map files in folder', async () => {
 			let res;
 
 			try {
-				res = await mapFolder(getTestFolderPath('diary'));
+				res = mapFolder.sync(getTestFolderPath('article.doc'));
 			}
 			catch (ex) {
-				return expect(false).to.be.true;
+				throw expect(false).to.be.true;
 			}
 
-			return expect(res).to.deep.equal(getExpectedResultFor('folderWithFiles'));
+			expect(res).to.deep.equal(getExpectedResultFor('file'));
 		});
 
-		it('maps a given folder recursively', async () => {
+		it('map files in folder', () => {
 			let res;
 
 			try {
-				res = await mapFolder(getTestFolderPath('/'));
+				res = mapFolder.sync(getTestFolderPath('diary'));
 			}
 			catch (ex) {
-				return expect(false).to.be.true;
+				throw expect(false).to.be.true;
 			}
 
-			return expect(res).to.deep.equal(getExpectedResultFor('fullStructure'));
+			expect(res).to.deep.equal(getExpectedResultFor('folderWithFiles'));
+		});
+
+		it('maps a given folder recursively', () => {
+			let res;
+
+			try {
+				res = mapFolder.sync(getTestFolderPath('/'));
+			}
+			catch (ex) {
+				console.log(ex);
+				throw expect(false).to.be.true;
+			}
+
+			expect(res).to.deep.equal(getExpectedResultFor('fullStructure'));
 		});
 
 		describe('ignore', () => {
-			it('ignores a given item', async () => {
+			it('ignores a given item', () => {
 				let res;
 
 				try {
-					res = await mapFolder(getTestFolderPath('/'), 'wish-list.txt');
+					res = mapFolder.sync(getTestFolderPath('/'), 'wish-list.txt');
 				}
 				catch (ex) {
 					return expect(false).to.be.true;
 				}
 
-				return expect(res).to.deep.equal(getExpectedResultFor('ignoreItem'));
+				expect(res).to.deep.equal(getExpectedResultFor('ignoreItem'));
 			});
 
-			it('ignores given list of items', async () => {
+			it('ignores given list of items', () => {
 				let res;
 
 				try {
-					res = await mapFolder(getTestFolderPath('/'), ['personal', 'day-2.txt']);
+					res = mapFolder.sync(getTestFolderPath('/'), ['personal', 'day-2.txt']);
 				}
 				catch (ex) {
 					return expect(false).to.be.true;
 				}
 
-				return expect(res).to.deep.equal(getExpectedResultFor('ignoreList'));
+				expect(res).to.deep.equal(getExpectedResultFor('ignoreList'));
 			});
 
 			describe('ignore function', () => {
-				it('works as a predicate function', async () => {
+				it('works as a predicate function', () => {
 					let res;
 
 					try {
 						const filter = ({name}) => !name.includes('h');
 
-						res = await mapFolder(getTestFolderPath('/'), filter);
+						res = mapFolder.sync(getTestFolderPath('/'), filter);
 					}
 					catch (ex) {
 						return expect(false).to.be.true;
 					}
 
-					return expect(res).to.deep.equal(getExpectedResultFor('filter'));
+					expect(res).to.deep.equal(getExpectedResultFor('filter'));
 				});
 
-				it('accepts `pathObj` argument', async () => {
+				it('accepts `pathObj` argument', () => {
 					const expected = [
 						'dummy-folder',
 						'article.doc',
@@ -132,7 +140,7 @@ describe('map-folder', () => {
 
 					let i = 0;
 
-					const ignoreFn = ({name, path, type}) => {
+					const filter = ({name, path, type}) => {
 						expect(expected.indexOf(name)).to.be.above(NOT_FOUND);
 						expect(path).to.be.a('string');
 						expect(type).to.be.oneOf([0, 1]);
@@ -141,17 +149,20 @@ describe('map-folder', () => {
 						return true;
 					};
 
-					await mapFolder(getTestFolderPath('/'), ignoreFn);
+					mapFolder.sync(getTestFolderPath('/'), filter);
 
 					return expect(i).to.equal(expected.length);
 				});
 			});
 		});
 
-		it('throws when given path does not exist', () => (
-			mapFolder('./test/not/exist')
-				.then(() => expect(true).to.be.false)
-				.catch(err => expect(err.message).to.include('ENOENT: no such file or directory'))
-		));
+		it('throws when given path does not exist', () => {
+			try {
+				mapFolder.sync('./test/not/exist');
+			}
+			catch (err) {
+				expect(err.message).to.include('ENOENT: no such file or directory');
+			}
+		});
 	});
 });
