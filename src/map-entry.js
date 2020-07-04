@@ -5,70 +5,84 @@ const {resolve, parse, join} = require('path');
 const {FILE, FOLDER} = require('./constants');
 const getStat = require('./promised/get-stat');
 const readDir = require('./promised/read-dir');
+const getConfig = require('./get-configs');
 
-async function mapEntry (rawEntryPath, ignore) {
+async function mapEntry (rawEntryPath, opts, force) {
+	const cfg = getConfig(opts);
 	const entryPath = resolve(rawEntryPath);
 	const entryType = await getEntryType(entryPath);
-	const pathObj = parse(entryPath);
-	const entryMap = createEntryMap(entryPath, entryType, pathObj);
+	const entryMap = createEntryMap(entryPath, entryType);
 
-	if (shouldBeIgnored(entryMap, ignore)) return null;
+	if (!shouldBeMapped(entryMap, cfg) && !force) return null;
 	if (entryType === FILE) return entryMap;
 	if (entryType === FOLDER) {
 		const entries = await readDir(entryPath);
-		const entriesMaps = await mapEntries(entryPath, entries, ignore);
+		const entryName = entryMap.name.toLowerCase();
 
-		if (entriesMaps) entryMap.entries = entriesMaps;
+		if (cfg.onlyNames && cfg.onlyNames.includes(entryName)) force = true;
+
+		const entriesObj = await mapEntries(entryPath, entries, opts, force);
+
+		if (cfg.onlyNames && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+		if (cfg.onlyExtensions && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+		if (entriesObj) entryMap.entries = entriesObj;
 
 		return entryMap;
 	}
 }
 
-function mapEntrySync (rawEntryPath, ignore) {
+function mapEntrySync (rawEntryPath, opts, force) {
+	const cfg = getConfig(opts);
 	const entryPath = resolve(rawEntryPath);
 	const entryType = getEntryTypeSync(entryPath);
-	const pathObj = parse(entryPath);
-	const entryMap = createEntryMap(entryPath, entryType, pathObj);
+	const entryMap = createEntryMap(entryPath, entryType);
 
-	if (shouldBeIgnored(entryMap, ignore)) return null;
+	if (!shouldBeMapped(entryMap, cfg) && !force) return null;
 	if (entryType === FILE) return entryMap;
 	if (entryType === FOLDER) {
 		const entries = readdirSync(entryPath);
-		const entriesMaps = mapEntriesSync(entryPath, entries, ignore);
+		const entryName = entryMap.name.toLowerCase();
 
-		if (entriesMaps) entryMap.entries = entriesMaps;
+		if (cfg.onlyNames && cfg.onlyNames.includes(entryName)) force = true;
+
+		const entriesObj = mapEntriesSync(entryPath, entries, opts, force);
+
+		if (cfg.onlyNames && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+		if (cfg.onlyExtensions && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+		if (entriesObj) entryMap.entries = entriesObj;
 
 		return entryMap;
 	}
 }
 
+function mapEntries (parentPath, entries, opts, force) {
+	if (!entries.length) return {};
+	const entriesObj = {};
 
-function mapEntries (parentPath, entries, ignore) {
-	const entriesMap = {};
 	const promises = entries.map((entryName) => {
 		const entryPath = join(parentPath, entryName);
 
-		return mapEntry(entryPath, ignore).then((entryMap) => {
-			if (entryMap) entriesMap[entryName] = entryMap;
+		return mapEntry(entryPath, opts, force).then((entryMap) => {
+			if (entryMap) entriesObj[entryName] = entryMap;
 		});
 	});
 
-	return Promise.all(promises).then(() => entriesMap);
+	return Promise.all(promises).then(() => entriesObj);
 }
 
-function mapEntriesSync (parentPath, entries, ignore) {
-	const entriesMap = {};
+function mapEntriesSync (parentPath, entries, opts, force) {
+	if (!entries.length) return {};
+	const entriesObj = {};
 
 	entries.forEach((entryName) => {
 		const entryPath = join(parentPath, entryName);
-		const entryMap = mapEntrySync(entryPath, ignore);
+		const entryMap = mapEntrySync(entryPath, opts, force);
 
-		if (entryMap) entriesMap[entryName] = entryMap;
+		if (entryMap) entriesObj[entryName] = entryMap;
 	});
 
-	return entriesMap;
+	return entriesObj;
 }
-
 
 async function getEntryType (entryPath) {
 	const statObj = await getStat(entryPath);
@@ -84,8 +98,9 @@ function getEntryTypeSync (entryPath) {
 	return isFolder ? FOLDER : FILE;
 }
 
+function createEntryMap (entryPath, entryType) {
+	const pathObj = parse(entryPath);
 
-function createEntryMap (entryPath, entryType, pathObj) {
 	const {base, name, ext} = pathObj;
 	const entryMap = {
 		path: entryPath,
@@ -104,34 +119,33 @@ function createEntryMap (entryPath, entryType, pathObj) {
 	return entryMap;
 }
 
-function shouldBeIgnored (pathObj, ignore) {
-	if (!ignore) return false;
+function shouldBeMapped (entryMap, cfg) {
+	const {
+		skipNames,
+		skipExtensions,
+		onlyNames,
+		onlyExtensions,
+		filter,
+	} = cfg;
 
-	const ignoreType = typeof ignore;
+	if (filter) return filter(entryMap);
 
-	if (ignoreType == 'string') {
-		if (pathObj.name.toLowerCase() === ignore.toLowerCase()) {
-			return true;
-		}
-	}
-	else if (ignoreType == 'function') {
-		// used as a predicate function (like filter)
-		return !ignore(pathObj);
-	}
-	else if (Array.isArray(ignore)) {
-		const len = ignore.length;
+	const entryName = entryMap.name.toLowerCase();
 
-		for (let i = 0; i < len; i++) {
-			const ignoreItem = ignore[i];
+	if (skipNames && skipNames.includes(entryName)) return false;
+	if (entryMap.type === FOLDER) return true;
 
-			if (pathObj.name.toLowerCase() === ignoreItem.toLowerCase()) {
-				return true;
-			}
-		}
-	}
+	const fileExt = entryMap.ext.toLowerCase();
 
-	return false;
+	if (onlyExtensions && onlyExtensions.includes(fileExt)) return true;
+	if (onlyNames && onlyNames.includes(entryName)) return true;
+
+	if (skipExtensions) return !skipExtensions.includes(fileExt);
+
+	const defaultVal = !(onlyNames || onlyExtensions);
+
+	return defaultVal;
 }
 
-module.exports = mapEntry;
+module.exports.async = mapEntry;
 module.exports.sync = mapEntrySync;
