@@ -2,11 +2,11 @@
 module.exports = function getConfigs (opts) {
 	if (opts && opts.isConfigured) return opts;
 	let rawExclude = null;
-	let rawMapOnly = null;
-	let skipNames = null;
-	let skipExtensions = null;
-	let onlyNames = null;
-	let onlyExtensions = null;
+	let rawInclude = null;
+	let excludeNames = null;
+	let excludeExtensions = null;
+	let includeNames = null;
+	let includeExtensions = null;
 	let filter = null;
 	let skipEmpty = false;
 
@@ -18,52 +18,20 @@ module.exports = function getConfigs (opts) {
 	}
 	else if (typeof opts == 'object') {
 		rawExclude = opts.exclude || null;
-		rawMapOnly = opts.include || null;
+		rawInclude = opts.include || null;
 		filter = opts.filter || null;
 		skipEmpty = opts.skipEmpty || skipEmpty;
 
-		if (rawMapOnly) {
-			if (typeof rawMapOnly != 'string' && !Array.isArray(rawMapOnly)) {
-				throw new Error('map-folder: `include` must be either a string or an array.');
-			}
-
-			onlyNames = [];
-			onlyExtensions = [];
-			if (typeof rawMapOnly == 'string') rawMapOnly = [rawMapOnly];
-
-			rawMapOnly.forEach((item) => {
-				item = item.toLowerCase();
-				if (item.startsWith('.')) onlyExtensions.push(item.substr(1));
-				else onlyNames.push(item);
-			});
-
-			if (!onlyNames.length) onlyNames = null;
-			if (!onlyExtensions.length) onlyExtensions = null;
-			if (onlyNames || onlyExtensions) skipEmpty = opts.skipEmpty == null ? true : skipEmpty;
-		}
-
-		if (onlyExtensions && skipExtensions) {
-			throw new Error('map-folder: Use either `onlyExtensions` OR `skipExtensions` but not both.');
+		if (rawInclude) {
+			rawInclude = normalizeStringArray('include', rawInclude);
+			[includeNames, includeExtensions] = separateNamesAndExtensions(rawInclude);
+			skipEmpty = opts.skipEmpty == null ? true : skipEmpty;
 		}
 	}
 
 	if (rawExclude) {
-		if (typeof rawExclude != 'string' && !Array.isArray(rawExclude)) {
-			throw new Error('map-folder: `exclude` must be either a string or an array.');
-		}
-
-		skipNames = [];
-		skipExtensions = [];
-		if (typeof rawExclude == 'string') rawExclude = [rawExclude];
-
-		rawExclude.forEach((item) => {
-			item = item.toLowerCase();
-			if (item.startsWith('.')) skipExtensions.push(item.substr(1));
-			else skipNames.push(item);
-		});
-
-		if (!skipNames.length) skipNames = null;
-		if (!skipExtensions.length) skipExtensions = null;
+		rawExclude = normalizeStringArray('exclude', rawExclude);
+		[excludeNames, excludeExtensions] = separateNamesAndExtensions(rawExclude);
 	}
 
 	if (filter && typeof filter != 'function') {
@@ -73,10 +41,34 @@ module.exports = function getConfigs (opts) {
 	return {
 		filter,
 		skipEmpty,
-		skipNames,
-		skipExtensions,
-		onlyNames,
-		onlyExtensions,
+		excludeNames,
+		excludeExtensions,
+		includeNames,
+		includeExtensions,
 		isConfigured: true,
 	};
 };
+
+function normalizeStringArray (optName, optValue) {
+	if (typeof optValue != 'string' && !Array.isArray(optValue)) {
+		throw new Error(`map-folder: \`${optName}\` must be either a string or an array.`);
+	}
+
+	return typeof optValue == 'string' ? [optValue] : optValue;
+}
+
+function separateNamesAndExtensions (bothAry) {
+	let entryNames = [];
+	let extensions = [];
+
+	bothAry.forEach((item) => {
+		item = item.toLowerCase();
+		if (item.startsWith('.')) extensions.push(item.substr(1));
+		else entryNames.push(item);
+	});
+
+	if (!entryNames.length) entryNames = null;
+	if (!extensions.length) extensions = null;
+
+	return [entryNames, extensions];
+}

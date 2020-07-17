@@ -19,7 +19,7 @@ async function mapEntry (rawEntryPath, opts, force) {
 		const entries = await readDir(entryPath);
 		const entryName = entryMap.name.toLowerCase();
 
-		if (cfg.onlyNames && cfg.onlyNames.includes(entryName)) force = true;
+		if (cfg.includeNames && cfg.includeNames.includes(entryName)) force = true;
 
 		const entriesObj = await mapEntries(entryPath, entries, opts, force);
 
@@ -42,7 +42,7 @@ function mapEntrySync (rawEntryPath, opts, force) {
 		const entries = readdirSync(entryPath);
 		const entryName = entryMap.name.toLowerCase();
 
-		if (cfg.onlyNames && cfg.onlyNames.includes(entryName)) force = true;
+		if (cfg.includeNames && cfg.includeNames.includes(entryName)) force = true;
 
 		const entriesObj = mapEntriesSync(entryPath, entries, opts, force);
 
@@ -119,28 +119,28 @@ function createEntryMap (entryPath, entryType) {
 
 function shouldBeMapped (entryMap, cfg) {
 	const {
-		skipNames,
-		skipExtensions,
-		onlyNames,
-		onlyExtensions,
 		filter,
+		excludeNames,
+		excludeExtensions,
+		includeNames,
+		includeExtensions,
 	} = cfg;
 
 	if (filter) return filter(entryMap);
 
 	const entryName = entryMap.name.toLowerCase();
 
-	if (skipNames && skipNames.includes(entryName)) return false;
+	if (excludeNames && excludeNames.includes(entryName)) return false;
 	if (entryMap.type === FOLDER) return true;
 
 	const fileExt = entryMap.ext.toLowerCase();
 
-	if (onlyExtensions && onlyExtensions.includes(fileExt)) return true;
-	if (onlyNames && onlyNames.includes(entryName)) return true;
+	if (includeExtensions && includeExtensions.includes(fileExt)) return true;
+	if (includeNames && includeNames.includes(entryName)) return true;
 
-	if (skipExtensions) return !skipExtensions.includes(fileExt);
+	if (excludeExtensions) return !excludeExtensions.includes(fileExt);
 
-	const defaultVal = !(onlyNames || onlyExtensions);
+	const defaultVal = !(includeNames || includeExtensions);
 
 	return defaultVal;
 }

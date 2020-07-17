@@ -2,24 +2,8 @@
 const {expect} = require('chai');
 
 const {mapFolderSync} = require('..');
-const getExpectedResultFor = require('./expected-results/get-expected-result');
-const getTestFolderPath = require('./expected-results/get-test-folder-path');
 
 module.exports = () => {
-	// it('throws when both `includeExt` & `excludeExt` are used', () => {
-	// 	try {
-	// 		mapFolderSync('./', {
-	// 			includeExt: ['js'],
-	// 			excludeExt: ['js'],
-	// 		});
-	// 	}
-	// 	catch (ex) {
-	// 		return expect(ex.message).to.contain('`includeExt` OR `excludeExt` but not both');
-	// 	}
-
-	// 	return expect(false).to.be.true;
-	// });
-
 	it('throws when filter is not a function', () => {
 		try {
 			mapFolderSync('./', {
