@@ -4,13 +4,8 @@ const resultMappers = {
 	file: exp => exp.entries['article.doc'],
 	folderWithFiles: exp => exp.entries.diary,
 	fullStructure: exp => exp,
-	ignoreItem: (exp) => {
+	excludeFile: (exp) => {
 		delete exp.entries.notes.entries['wish-list.txt'];
-		return exp;
-	},
-	ignoreList: (exp) => {
-		delete exp.entries.notes.entries.personal;
-		delete exp.entries.diary.entries['day-2.txt'];
 		return exp;
 	},
 	filter: (exp) => {
@@ -19,31 +14,11 @@ const resultMappers = {
 		delete exp.entries.code.entries['index.html'];
 		return exp;
 	},
-	includeExt: (exp) => {
-		delete exp.entries.code;
-		delete exp.entries.diary;
-		delete exp.entries.notes.entries.empty;
-		delete exp.entries.notes.entries.personal.entries['goals.txt'];
-		delete exp.entries.notes.entries['wish-list.txt'];
-		return exp;
-	},
-	excludeExt: (exp) => {
-		delete exp.entries['article.doc'];
-		delete exp.entries.notes.entries.personal.entries['contacts.csv'];
-		return exp;
-	},
 	skipEmpty: (exp) => {
 		exp.entries.code.entries.images.entries = {};
 		exp.entries.code.entries = {images: exp.entries.code.entries.images};
 		exp.entries.diary.entries = {};
 		exp.entries.notes.entries.empty.entries = {};
-		delete exp.entries.notes.entries.personal.entries['goals.txt'];
-		delete exp.entries.notes.entries['wish-list.txt'];
-		return exp;
-	},
-	allExt: (exp) => {
-		delete exp.entries.diary;
-		delete exp.entries.notes.entries.empty;
 		delete exp.entries.notes.entries.personal.entries['goals.txt'];
 		delete exp.entries.notes.entries['wish-list.txt'];
 		return exp;
