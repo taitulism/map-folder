@@ -296,7 +296,7 @@ module.exports = () => {
 		});
 
 		describe('skipEmpty', () => {
-			it('toggle skip empty folders when using `includeExt`', () => {
+			it('toggle skip empty folders when using `include`', () => {
 				let res;
 
 				try {

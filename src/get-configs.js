@@ -8,7 +8,7 @@ module.exports = function getConfigs (opts) {
 	let onlyNames = null;
 	let onlyExtensions = null;
 	let filter = null;
-	let skipEmpty = null;
+	let skipEmpty = false;
 
 	if (typeof opts == 'string' || Array.isArray(opts)) {
 		rawExclude = opts;
@@ -20,7 +20,7 @@ module.exports = function getConfigs (opts) {
 		rawExclude = opts.exclude || null;
 		rawMapOnly = opts.include || null;
 		filter = opts.filter || null;
-		skipEmpty = opts.skipEmpty == null ? skipEmpty : opts.skipEmpty;
+		skipEmpty = opts.skipEmpty || skipEmpty;
 
 		if (rawMapOnly) {
 			if (typeof rawMapOnly != 'string' && !Array.isArray(rawMapOnly)) {
@@ -39,7 +39,7 @@ module.exports = function getConfigs (opts) {
 
 			if (!onlyNames.length) onlyNames = null;
 			if (!onlyExtensions.length) onlyExtensions = null;
-			skipEmpty = skipEmpty == null ? true : skipEmpty;
+			if (onlyNames || onlyExtensions) skipEmpty = opts.skipEmpty == null ? true : skipEmpty;
 		}
 
 		if (onlyExtensions && skipExtensions) {

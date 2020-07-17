@@ -289,7 +289,7 @@ module.exports = () => {
 		});
 
 		describe('skipEmpty', () => {
-			it('toggle skip empty folders when using `includeExt`', async () => {
+			it('toggle skip empty folders when using `include`', async () => {
 				let res;
 
 				try {

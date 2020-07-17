@@ -23,8 +23,7 @@ async function mapEntry (rawEntryPath, opts, force) {
 
 		const entriesObj = await mapEntries(entryPath, entries, opts, force);
 
-		if (cfg.onlyNames && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
-		if (cfg.onlyExtensions && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+		if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
 		if (entriesObj) entryMap.entries = entriesObj;
 
 		return entryMap;
@@ -47,8 +46,7 @@ function mapEntrySync (rawEntryPath, opts, force) {
 
 		const entriesObj = mapEntriesSync(entryPath, entries, opts, force);
 
-		if (cfg.onlyNames && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
-		if (cfg.onlyExtensions && cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+		if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
 		if (entriesObj) entryMap.entries = entriesObj;
 
 		return entryMap;

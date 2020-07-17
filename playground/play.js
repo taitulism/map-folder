@@ -1,9 +1,9 @@
 /* eslint-disable */
-const mapFolder = require('../');
+const {mapFolderSync} = require('../');
 
-const map = mapFolder.sync('./test/dummy-folder', {
-	exclude: ['node_modules', 'configs.js', '.log'],
-	include: ['.js', '_index_only', 'public', 'debug.log'],
+const map = mapFolderSync('./test/dummy-folder', {
+	include: ['.csv', '.doc'],
+	skipEmpty: false,
 });
 
 
