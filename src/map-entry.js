@@ -126,23 +126,24 @@ function shouldBeMapped (entryMap, cfg) {
 		includeExtensions,
 	} = cfg;
 
-	if (filter) return filter(entryMap);
-
+	const defaultRetVal = !(includeNames || includeExtensions);
 	const entryName = entryMap.name.toLowerCase();
 
+	if (includeNames && includeNames.includes(entryName)) return true;
 	if (excludeNames && excludeNames.includes(entryName)) return false;
-	if (entryMap.type === FOLDER) return true;
+
+	if (entryMap.type === FOLDER)
+		return (filter) ? filter(entryMap) : true;
 
 	const fileExt = entryMap.ext.toLowerCase();
 
 	if (includeExtensions && includeExtensions.includes(fileExt)) return true;
-	if (includeNames && includeNames.includes(entryName)) return true;
+	if (excludeExtensions && excludeExtensions.includes(fileExt)) return false;
 
-	if (excludeExtensions) return !excludeExtensions.includes(fileExt);
+	if (filter)
+		return filter(entryMap);
 
-	const defaultVal = !(includeNames || includeExtensions);
-
-	return defaultVal;
+	return defaultRetVal;
 }
 
 module.exports.async = mapEntry;

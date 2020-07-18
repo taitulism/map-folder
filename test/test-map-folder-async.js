@@ -129,7 +129,7 @@ module.exports = () => {
 
 		describe('options', () => {
 			describe('filter', () => {
-				it('works as a predicate function', async() => {
+				it('works as a predicate function', async () => {
 					let res;
 
 					try {
@@ -142,6 +142,40 @@ module.exports = () => {
 					}
 
 					return expect(res).to.deep.equal(getExpectedResultFor('filter'));
+				});
+
+				it('is called after `include`/`exclude`', async () => {
+					let resA, resB;
+					let callsCountA = 0;
+					let callsCountB = 0;
+
+					try {
+						resA = await mapFolder(getTestFolderPath('/'), {
+							filter: ({name}) => {
+								callsCountA++;
+								return !name.includes('h')
+							},
+						});
+
+						resB = await mapFolder(getTestFolderPath('/'), {
+							exclude: 'index.html',
+							filter: ({name}) => {
+								callsCountB++;
+								return !name.includes('h')
+							},
+						});
+					}
+					catch (ex) {
+						return expect(false).to.be.true;
+					}
+
+					const sameResult = getExpectedResultFor('filterAfter');
+
+					expect(resA).to.deep.equal(sameResult);
+					expect(resB).to.deep.equal(sameResult);
+
+					// second filter is called 1 time less because of the `exclude`
+					expect(callsCountA - callsCountB).to.equal(1);
 				});
 			});
 

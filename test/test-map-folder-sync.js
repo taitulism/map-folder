@@ -150,6 +150,40 @@ module.exports = () => {
 
 					expect(res).to.deep.equal(getExpectedResultFor('filter'));
 				});
+
+				it('is called after `include`/`exclude`', () => {
+					let resA, resB;
+					let callsCountA = 0;
+					let callsCountB = 0;
+
+					try {
+						resA = mapFolderSync(getTestFolderPath('/'), {
+							filter: ({name}) => {
+								callsCountA++;
+								return !name.includes('h')
+							},
+						});
+
+						resB = mapFolderSync(getTestFolderPath('/'), {
+							exclude: 'index.html',
+							filter: ({name}) => {
+								callsCountB++;
+								return !name.includes('h')
+							},
+						});
+					}
+					catch (ex) {
+						return expect(false).to.be.true;
+					}
+
+					const sameResult = getExpectedResultFor('filterAfter');
+
+					expect(resA).to.deep.equal(sameResult);
+					expect(resB).to.deep.equal(sameResult);
+
+					// second filter is called 1 time less because of the `exclude`
+					expect(callsCountA - callsCountB).to.equal(1);
+				});
 			});
 
 			describe('exclude', () => {

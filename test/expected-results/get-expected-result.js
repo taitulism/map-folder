@@ -14,6 +14,12 @@ const resultMappers = {
 		delete exp.entries.code.entries['index.html'];
 		return exp;
 	},
+	filterAfter: (exp) => {
+		delete exp.entries.notes.entries['wish-list.txt'];
+		delete exp.entries.code.entries.images.entries['photo.jpg'];
+		delete exp.entries.code.entries['index.html'];
+		return exp;
+	},
 	skipEmpty: (exp) => {
 		exp.entries.code.entries.images.entries = {};
 		exp.entries.code.entries = {images: exp.entries.code.entries.images};
