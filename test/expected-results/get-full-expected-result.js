@@ -148,5 +148,4 @@ module.exports = function getFullExpectedResult () {
 			}
 		}
 	};
-}
-
+};

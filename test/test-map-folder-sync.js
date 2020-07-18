@@ -162,7 +162,7 @@ module.exports = () => {
 						resA = mapFolderSync(getTestFolderPath('/'), {
 							filter: ({name}) => {
 								callsCountA++;
-								return !name.includes('h')
+								return !name.includes('h');
 							},
 						});
 
@@ -170,7 +170,7 @@ module.exports = () => {
 							exclude: 'index.html',
 							filter: ({name}) => {
 								callsCountB++;
-								return !name.includes('h')
+								return !name.includes('h');
 							},
 						});
 					}

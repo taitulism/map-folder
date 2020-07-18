@@ -1,5 +1,3 @@
-/* eslint-disable max-lines-per-function */
-
 const {expect} = require('chai');
 
 const mapFolder = require('../index');
@@ -8,11 +6,11 @@ const getTestFolderPath = require('./expected-results/get-test-folder-path');
 
 module.exports = () => {
 	describe('arg[0] - path', () => {
-		it('can map a single file', () => {
-			return mapFolder(getTestFolderPath('article.doc'))
+		it('can map a single file', () => (
+			mapFolder(getTestFolderPath('article.doc'))
 				.then(res => expect(res).to.deep.equal(getExpectedResultFor('file')))
-				.catch(() => expect(false).to.be.true);
-		});
+				.catch(() => expect(false).to.be.true)
+		));
 
 		it('maps files in folder', async () => {
 			let res;
@@ -155,7 +153,7 @@ module.exports = () => {
 						resA = await mapFolder(getTestFolderPath('/'), {
 							filter: ({name}) => {
 								callsCountA++;
-								return !name.includes('h')
+								return !name.includes('h');
 							},
 						});
 
@@ -163,7 +161,7 @@ module.exports = () => {
 							exclude: 'index.html',
 							filter: ({name}) => {
 								callsCountB++;
-								return !name.includes('h')
+								return !name.includes('h');
 							},
 						});
 					}

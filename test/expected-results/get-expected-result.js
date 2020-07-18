@@ -49,11 +49,11 @@ const resultMappers = {
 	},
 	includeFiles: (exp) => {
 		delete exp.entries.code.entries.images;
+		delete exp.entries.code.entries.FLAG;
 		delete exp.entries.code.entries['app.js'];
 		delete exp.entries.code.entries['index.html'];
 		delete exp.entries.code.entries['style.css'];
 		delete exp.entries.code.entries['.dotfile'];
-		delete exp.entries.code.entries['FLAG'];
 		delete exp.entries.diary.entries['day-1.txt'];
 		delete exp.entries.notes;
 		delete exp.entries['article.doc'];
@@ -73,7 +73,7 @@ const resultMappers = {
 		delete exp.entries['article.doc'];
 		return exp;
 	},
-}
+};
 
 module.exports = function getExpectedResult (testName) {
 	const fullExpectedResult = getFullExpectedResult();

@@ -140,16 +140,14 @@ function shouldBeMapped (entryMap, cfg) {
 	if (includeNames && includeNames.includes(entryName)) return true;
 	if (excludeNames && excludeNames.includes(entryName)) return false;
 
-	if (entryMap.type === FOLDER)
-		return (filter) ? filter(entryMap) : true;
+	if (entryMap.type === FOLDER) return (filter) ? filter(entryMap) : true;
 
 	const fileExt = entryMap.ext.toLowerCase();
 
 	if (includeExtensions && includeExtensions.includes(fileExt)) return true;
 	if (excludeExtensions && excludeExtensions.includes(fileExt)) return false;
 
-	if (filter)
-		return filter(entryMap);
+	if (filter) return filter(entryMap);
 
 	return defaultRetVal;
 }
