@@ -111,6 +111,8 @@ module.exports = () => {
 					'app.min.js',
 					'index.html',
 					'style.css',
+					'FLAG',
+					'.dotfile',
 					'images',
 					'logo.png',
 					'photo.jpg',

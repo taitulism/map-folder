@@ -2,8 +2,8 @@
 const {mapFolderSync} = require('../');
 
 const map = mapFolderSync('./test/dummy-folder', {
-	include: ['.csv', '.doc'],
-	skipEmpty: false,
+	exclude: ['.ignored', '.doc'],
+	// skipEmpty: false,
 });
 
 

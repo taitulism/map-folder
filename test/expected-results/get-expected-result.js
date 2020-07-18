@@ -52,6 +52,8 @@ const resultMappers = {
 		delete exp.entries.code.entries['app.js'];
 		delete exp.entries.code.entries['index.html'];
 		delete exp.entries.code.entries['style.css'];
+		delete exp.entries.code.entries['.dotfile'];
+		delete exp.entries.code.entries['FLAG'];
 		delete exp.entries.diary.entries['day-1.txt'];
 		delete exp.entries.notes;
 		delete exp.entries['article.doc'];

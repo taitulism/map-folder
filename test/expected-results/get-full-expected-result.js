@@ -109,6 +109,20 @@ module.exports = function getFullExpectedResult () {
 						ext: 'css',
 						path: getTestFolderPath('/code/style.css'),
 					},
+					'.dotfile': {
+						name: '.dotfile',
+						type: 1,
+						base: '',
+						ext: 'dotfile',
+						path: getTestFolderPath('/code/.dotfile'),
+					},
+					FLAG: {
+						name: 'FLAG',
+						type: 1,
+						base: 'FLAG',
+						ext: '',
+						path: getTestFolderPath('/code/FLAG'),
+					},
 					images: {
 						name: 'images',
 						type: 0,

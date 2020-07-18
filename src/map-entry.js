@@ -107,8 +107,16 @@ function createEntryMap (entryPath, entryType) {
 
 	if (entryType === FILE) {
 		entryMap.name = base;
-		entryMap.base = name;
-		entryMap.ext = ext.substr(1);
+
+		// .dotfile
+		if (name.startsWith('.') && !ext) {
+			entryMap.base = '';
+			entryMap.ext = name.substr(1);
+		}
+		else {
+			entryMap.base = name;
+			entryMap.ext = ext.substr(1);
+		}
 	}
 	else if (entryType === FOLDER) {
 		entryMap.name = base;
