@@ -15,21 +15,21 @@ Usage
 -----
 Map a folder:
 
-Sync
-```js
-const mapFolder = require('map-folder');
-
-const result = mapFolder.sync('path/to/my-project');
-console.log(result);
-```
-
 Async
 ```js
-const mapFolder = require('map-folder');
+const {mapFolder} = require('map-folder');
 
-mapFolder('path/to/my-project').then((result) => {
+mapFolder('path/to/my-project', options).then((result) => {
     console.log(result);
 });
+```
+
+Sync
+```js
+const {mapFolderSync} = require('map-folder');
+
+const result = mapFolderSync('path/to/my-project', options);
+console.log(result);
 ```
 
 Example folder structure:
@@ -74,62 +74,136 @@ Example results:
 
 ## API
 ------------------------------------------------------------------------
-## async - `mapFolder(path, ignore)`
-## sync - `mapFolder.sync(path, ignore)`
+## `mapFolder(path, options)`
+## `mapFolderSync(path, options)`
 ### Arguments:
 * **path** - A path to an existing folder.
-* **ignore** - Exclude items mechanism. Read more below.
+* **options** - Exclude/Include items. Read more below.
 
 ### Return:
-A JSON object or a promise for that object. 
+A JSON object (or a promise for JSON) that represents the target folder structure.
 
+## Options
+<!-- * **exclude** - `string|string[]` - file & folder names and extensions to skip.
+* **include** - `string|string[]` - file & folder names and extensions to map only.
+* **filter** - `(entryMap) => boolean` - decide if an entry should be mapped or not.
+* **skipEmpty** - `boolean` - when using `include` empty folders are skipped by default. -->
+
+| Option      | Type                 | Description |
+|-------------|----------------------|-------------|
+| `exclude`   |string | string[]     | file & folder names and extensions to skip.                |
+| `include`   |string | string[]     | file & folder names and extensions to map only.            |
+| `skipEmpty` |boolean               | when using `include` empty folders are skipped by default. |
+| `filter`    |(entryMap) => boolean | decide if an entry should be mapped or not.                |
+
+### `include` & `exclude`
+By default all entries (file & folders) are mapped recursively. Use the `exclude` option to skip/ignore certain entries. Using the `include` option means *only* map the given items.
+
+
+Both could be either a string or an array of strings, which are the entry names or file extensions you want to map. File extensions should start with a dot (e.g. `'.log'`)
+
+Both are compared to the entry full name and/or extension by lower-cased comparison, meaning an `'abc'` item will also match `'ABC'` entry names.
+
+When used together, excluded items will be substract from the included entries (include comes first). The only exception is when you include a folder, then it will be mapped completely, with no exclusions.
+
+
+### `exclude`
+Use the `exclude` option to skip/ignore certain entries.
+
+```js
+// map everything but "node_modules"
+mapFolder('./my-project', {
+    exclude: 'node_modules'
+})
+
+// map everything but "node_modules" and log files
+mapFolder('./my-project', {
+    exclude: ['node_modules', '.log']
+})
+```
+
+If you only need the `exclude` option you can pass it as the second argument:
+```js
+mapFolder('./my-project', ['node_modules', '.log'])
+```
+
+
+### `include`
+Use the `include` option when you only want to map certain entries in the target folder.
+
+```js
+// only map js & json files
+mapFolder('./my-project', {
+    include: ['.js', '.json']
+})
+```
+
+>When including a folder, the whole folder will be mapped, regardless of other  options (forces all entries in that folder).
+
+
+### `skipEmpty`
+When using the `include` option, empty folders are skipped by default. Set `skipEmpty` to `false` if you want empty folders to be mapped.
+```js
+mapFolder('./my-project', {
+    include: ['.js', '.json'],
+    skipEmpty: false
+})
+```
+
+### `filter`
+If you need more control over which entries to map and which should be skipped you can pass a function to the `filter` option. This function gets called for every entry that was not handled by your `include`/`exclude` options. It gets called with an `entryMap` object (see below).
+
+Return `true` to map the entry or `false` to skip.
+```js
+// map all folders and files that starts with an "a"
+mapFolder('./my-project', {
+    filter: ({type, base}) => type === FOLDER || base.startsWith('a')
+})
+```
+
+If you only need the `filter` option you can pass it as the second argument:
+```js
+mapFolder('./my-project', (entryMap) => boolean)
+```
+
+
+## Entry Map Object
 Every entry in the result (including the result itself) holds the following properties:  
-* `name`: String - The whole entry name. Includes file extensions.
-* `path`: String - the absolute path to the entry.
-* `type`: Enum | Number - a file or a folder.
+<!-- * `name`: `String` - The whole entry name. Includes file extensions.
+* `path`: `String` - the absolute path to the entry.
+* `type`: `Number` - a file or a folder enum. -->
+
+| Prop name | Type   | Description |
+|-----------|--------|-------------|
+| `name`    | String | The whole entry name. Includes file extensions. |
+| `path`    | String | the absolute path to the entry.                 |
+| `type`    | Number | a file or a folder enum.                        |
+
 
 Each type has its own additional properties:
 * **FOLDER** - 0
-    * `entries`: Object - An object of the folder's child entries (sub-folders and files).
+    <!-- * `entries`: Object - An object of the folder's child `entryMap`s (sub-folders and files). -->
+
+    | Prop name | Type   | Description |
+    |-----------|--------|-------------|
+    | `entries` | Object | A JSON object of the folder's child `entryMap`s (sub-folders and files). |
+
 * **FILE** - 1
-    * `base`: String - The file name without the extension.
-    * `ext`: String - The file extension without a dot.
+    <!-- * `base`: String - The file name without the extension.
+    * `ext`: String - The file extension without a dot. -->
+
+    
+    | Prop name | Type     | Description                          |
+    |-----------|----------|--------------------------------------|
+    | `base`    | String   | The file name without the extension. |
+    | `ext`     | String   | The file extension without a dot.    |
 
 You can use the exported `FILE` and `FOLDER` constants as types to check entry type:
 ```js
 const {FILE, FOLDER} = require('map-folder');
 
-if (result.entries.myApp.type === FOLDER) // ...
+if (result.entries.myApp.type === FOLDER) {
+    // ...
+}
 ```
 > There are other entry types like symlinks, currently out of this module's scope.
-
-&nbsp;
-
-## Ignore
----------
-`String | String[] | () => boolean`
-
-To exclude entries (files and folder) you can use the `ignore` argument.
-
-It could be a string or an array of strings you would like to skip when mapping. Like `node_modules` for example. They are compared with the entry's `name` property.
-
-You could also use it as a predicate function. This function will get called for every entry in the target folder, recursively. Its argument is an entry map object (see above).
-
-> Folders will not have the `entries` property at this point.
-
-The predicate function should return a `boolean`. Return `true` to map the current entry or `false` to skip it.
-
-```js
-const path = 'path/to/my-project';
-
-mapFolder(path, 'node_modules')
-mapFolder(path, ['node_modules', 'my-passwords.txt'])
-
-// exclude a sensitive folder
-mapFolder(path, (entry) => {
-    if (entry.type === FOLDER && entry.name === 'secrets') {
-        return false;
-    }
-    return true;
-});
-```
