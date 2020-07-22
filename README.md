@@ -13,25 +13,18 @@ $ npm install map-folder
 
 Usage
 -----
-Map a folder:
-
-Async
 ```js
-const {mapFolder} = require('map-folder');
+const {mapFolder, mapFolderSync} = require('map-folder');
 
-mapFolder('path/to/my-project', options).then((result) => {
-    console.log(result);
-});
-```
+// async
+mapFolder('path/to/my-project', options).then((result) => {...});
 
-Sync
-```js
-const {mapFolderSync} = require('map-folder');
-
+// sync
 const result = mapFolderSync('path/to/my-project', options);
-console.log(result);
 ```
 
+Result
+-----
 Example folder structure:
 ```
 └─ my-project
@@ -40,22 +33,22 @@ Example folder structure:
    └─ index.js
 ```
 
-Example results:
+Results:
 ```js
 {
-    name: 'my-project',
     path: 'path/to/my-project',
     type: FOLDER,
+    name: 'my-project',
     entries: {
         'common': {
-            name: 'common',
             path:'path/to/my-project/common',
+            name: 'common',
             type: FOLDER,
             entries: {
                 "utils.js": {
-                    name: 'utils.js',
                     path:'path/to/my-project/common/utils.js',
                     type: FILE,
+                    name: 'utils.js',
                     base: 'utils',
                     ext: 'js',
                 }
@@ -75,7 +68,6 @@ Example results:
 ## API
 ------------------------------------------------------------------------
 ## `mapFolder(path, options)`
-## `mapFolderSync(path, options)`
 ### Arguments:
 * **path** - A path to an existing folder.
 * **options** - Exclude/Include items. Read more below.
@@ -84,23 +76,28 @@ Example results:
 A JSON object (or a promise for JSON) that represents the target folder structure.
 
 ## Options
-<!-- * **exclude** - `string|string[]` - file & folder names and extensions to skip.
-* **include** - `string|string[]` - file & folder names and extensions to map only.
-* **filter** - `(entryMap) => boolean` - decide if an entry should be mapped or not.
-* **skipEmpty** - `boolean` - when using `include` empty folders are skipped by default. -->
+| Option      | Type                   | Description                                                |
+|-------------|------------------------|------------------------------------------------------------|
+| `exclude`   | Array\<String\>        | file & folder names and extensions to skip.                |
+| `include`   | Array\<String/Object\> | file & folder names and extensions to map only.            |
+| `skipEmpty` | boolean                | when using `include` empty folders are skipped by default. |
+| `filter`    | (entryMap) => boolean  | decide if an entry should be mapped or not.                |
 
-| Option      | Type                 | Description |
-|-------------|----------------------|-------------|
-| `exclude`   |string | string[]     | file & folder names and extensions to skip.                |
-| `include`   |string | string[]     | file & folder names and extensions to map only.            |
-| `skipEmpty` |boolean               | when using `include` empty folders are skipped by default. |
-| `filter`    |(entryMap) => boolean | decide if an entry should be mapped or not.                |
+In case you only want `exclude` or `filter` you can pass it as the second argument instead of `options`:
+```js
+mapFolder(path, exclude)
+mapFolder(path, filter)
+```
 
+&nbsp;
+
+---------------------------------------------------------------------------------------------------
 ### `include` & `exclude`
 By default all entries (file & folders) are mapped recursively. Use the `exclude` option to skip/ignore certain entries. Using the `include` option means *only* map the given items.
 
 
-Both could be either a string or an array of strings, which are the entry names or file extensions you want to map. File extensions should start with a dot (e.g. `'.log'`)
+Both are array of strings, which are the entry names or file extensions you want to map. File extensions should start with a dot (e.g. `'.log'`).  
+`include` also accept objects, see below.
 
 Both are compared to the entry full name and/or extension by lower-cased comparison, meaning an `'abc'` item will also match `'ABC'` entry names.
 
@@ -132,17 +129,29 @@ mapFolder('./my-project', ['node_modules', '.log'])
 Use the `include` option when you only want to map certain entries in the target folder.
 
 ```js
-// only map js & json files
+// only map js files & the package.json file
 mapFolder('./my-project', {
-    include: ['.js', '.json']
+    include: ['.js', 'package.json']
 })
 ```
 
->When including a folder, the whole folder will be mapped, regardless of other  options (forces all entries in that folder).
+>When including a folder name, the whole folder will be mapped, regardless of other options, including all entries in that folder.
 
+If you want a sub-folder to be mapped with its own rules you can pass in an object. This object is an `options` object but should also have the folder name (`name` property).
+
+```js
+// map all .js files in the target folder and 
+// all .svg files in "icons" sub-folder
+mapFolder('./my-project', {
+    include: ['.js', {
+        name: 'icons',
+        include: ['.svg']
+    }]
+})
+```
 
 ### `skipEmpty`
-When using the `include` option, empty folders are skipped by default. Set `skipEmpty` to `false` if you want empty folders to be mapped.
+Empty folders are mapped by default but when using the `include` option empty folders are skipped by default. Change this behavior by setting `skipEmpty` with a boolean.
 ```js
 mapFolder('./my-project', {
     include: ['.js', '.json'],
@@ -153,7 +162,7 @@ mapFolder('./my-project', {
 ### `filter`
 If you need more control over which entries to map and which should be skipped you can pass a function to the `filter` option. This function gets called for every entry that was not handled by your `include`/`exclude` options. It gets called with an `entryMap` object (see below).
 
-Return `true` to map the entry or `false` to skip.
+Return `true` to map the entry or `false` to skip it.
 ```js
 // map all folders and files that starts with an "a"
 mapFolder('./my-project', {
@@ -173,8 +182,8 @@ Every entry in the result (including the result itself) holds the following prop
 * `path`: `String` - the absolute path to the entry.
 * `type`: `Number` - a file or a folder enum. -->
 
-| Prop name | Type   | Description |
-|-----------|--------|-------------|
+| Prop name | Type   | Description                                     |
+|-----------|--------|-------------------------------------------------|
 | `name`    | String | The whole entry name. Includes file extensions. |
 | `path`    | String | the absolute path to the entry.                 |
 | `type`    | Number | a file or a folder enum.                        |
@@ -184,8 +193,8 @@ Each type has its own additional properties:
 * **FOLDER** - 0
     <!-- * `entries`: Object - An object of the folder's child `entryMap`s (sub-folders and files). -->
 
-    | Prop name | Type   | Description |
-    |-----------|--------|-------------|
+    | Prop name | Type   | Description                                                              |
+    |-----------|--------|--------------------------------------------------------------------------|
     | `entries` | Object | A JSON object of the folder's child `entryMap`s (sub-folders and files). |
 
 * **FILE** - 1
@@ -193,10 +202,10 @@ Each type has its own additional properties:
     * `ext`: String - The file extension without a dot. -->
 
     
-    | Prop name | Type     | Description                          |
-    |-----------|----------|--------------------------------------|
-    | `base`    | String   | The file name without the extension. |
-    | `ext`     | String   | The file extension without a dot.    |
+    | Prop name | Type   | Description                          |
+    |-----------|--------|--------------------------------------|
+    | `base`    | String | The file name without the extension. |
+    | `ext`     | String | The file extension without a dot.    |
 
 You can use the exported `FILE` and `FOLDER` constants as types to check entry type:
 ```js
