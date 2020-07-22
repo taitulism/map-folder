@@ -4,10 +4,6 @@ const resultMappers = {
 	file: exp => exp.entries['article.doc'],
 	folderWithFiles: exp => exp.entries.diary,
 	fullStructure: exp => exp,
-	excludeFile: (exp) => {
-		delete exp.entries.notes.entries['wish-list.txt'];
-		return exp;
-	},
 	filter: (exp) => {
 		delete exp.entries.notes.entries['wish-list.txt'];
 		delete exp.entries.code.entries.images.entries['photo.jpg'];
@@ -68,6 +64,17 @@ const resultMappers = {
 		return exp;
 	},
 	extensionsAndWholeFolder: (exp) => {
+		delete exp.entries.notes.entries.empty;
+		delete exp.entries.notes.entries.personal.entries['contacts.csv'];
+		delete exp.entries['article.doc'];
+		return exp;
+	},
+	folderWithOptions: (exp) => {
+		delete exp.entries.code.entries.images;
+		delete exp.entries.code.entries.FLAG;
+		delete exp.entries.code.entries['app.js'];
+		delete exp.entries.code.entries['.dotfile'];
+		delete exp.entries.code.entries['style.css'];
 		delete exp.entries.notes.entries.empty;
 		delete exp.entries.notes.entries.personal.entries['contacts.csv'];
 		delete exp.entries['article.doc'];

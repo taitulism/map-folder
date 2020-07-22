@@ -1,4 +1,4 @@
-// eslint-disable-next-line max-statements, max-lines-per-function, complexity
+// eslint-disable-next-line max-statements, max-lines-per-function
 module.exports = function getConfigs (opts) {
 	if (opts && opts.isConfigured) return opts;
 	let rawExclude = null;
@@ -7,30 +7,36 @@ module.exports = function getConfigs (opts) {
 	let excludeExtensions = null;
 	let includeNames = null;
 	let includeExtensions = null;
+	let foldersOptsMap = null;
 	let filter = null;
 	let skipEmpty = false;
 
-	if (typeof opts == 'string' || Array.isArray(opts)) {
+	if (Array.isArray(opts)) {
 		rawExclude = opts;
 	}
 	else if (typeof opts == 'function') {
 		filter = opts;
 	}
-	else if (typeof opts == 'object') {
+	else if (typeof opts == 'object' && opts != null) {
 		rawExclude = opts.exclude || null;
 		rawInclude = opts.include || null;
 		filter = opts.filter || null;
 		skipEmpty = opts.skipEmpty || skipEmpty;
 
 		if (rawInclude) {
-			rawInclude = normalizeStringArray('include', rawInclude);
-			[includeNames, includeExtensions] = separateNamesAndExtensions(rawInclude);
+			validateInclude(rawInclude);
+			[
+				includeNames,
+				includeExtensions,
+				foldersOptsMap
+			] = separateNamesAndExtensions(rawInclude);
+
 			skipEmpty = opts.skipEmpty == null ? true : skipEmpty;
 		}
 	}
 
 	if (rawExclude) {
-		rawExclude = normalizeStringArray('exclude', rawExclude);
+		validateExclude(rawExclude);
 		[excludeNames, excludeExtensions] = separateNamesAndExtensions(rawExclude);
 	}
 
@@ -45,30 +51,56 @@ module.exports = function getConfigs (opts) {
 		excludeExtensions,
 		includeNames,
 		includeExtensions,
+		includeFolders: foldersOptsMap,
 		isConfigured: true,
 	};
 };
 
-function normalizeStringArray (optName, optValue) {
-	if (typeof optValue != 'string' && !Array.isArray(optValue)) {
-		throw new Error(`map-folder: \`${optName}\` must be either a string or an array.`);
+function validateExclude (rawExclude) {
+	if (!Array.isArray(rawExclude)) {
+		throw new Error('map-folder: `exclude` option must be an array.');
 	}
 
-	return typeof optValue == 'string' ? [optValue] : optValue;
+	rawExclude.forEach((item) => {
+		if (!item || typeof item != 'string') {
+			throw new Error('map-folder: `exclude` array should be an array of strings only.');
+		}
+	});
 }
 
-function separateNamesAndExtensions (bothAry) {
+function validateInclude (rawInclude) {
+	if (!Array.isArray(rawInclude)) {
+		throw new Error('map-folder: `include` option must be an array.');
+	}
+
+	rawInclude.forEach((item) => {
+		if (!item || (typeof item != 'string' && (typeof item != 'object' || !item.name))) {
+			throw new Error('map-folder: `include` option must be an array of strings or objects. Objects must have a `name` property');
+		}
+	});
+}
+
+function separateNamesAndExtensions (rawArray) {
 	let entryNames = [];
 	let extensions = [];
+	let foldersOpts = new Map();
 
-	bothAry.forEach((item) => {
-		item = item.toLowerCase();
+	rawArray.forEach((item) => {
+		if (typeof item == 'string') {
+			item = item.toLowerCase();
+		}
+		else {
+			foldersOpts.set(item.name, item);
+			item = item.name;
+		}
+
 		if (item.startsWith('.')) extensions.push(item.substr(1));
 		else entryNames.push(item);
 	});
 
 	if (!entryNames.length) entryNames = null;
 	if (!extensions.length) extensions = null;
+	if (!foldersOpts.size) foldersOpts = null;
 
-	return [entryNames, extensions];
+	return [entryNames, extensions, foldersOpts];
 }

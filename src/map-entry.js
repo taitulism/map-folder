@@ -7,21 +7,19 @@ const getStat = require('./promised/get-stat');
 const readDir = require('./promised/read-dir');
 const getConfig = require('./get-configs');
 
-async function mapEntry (rawEntryPath, opts, force) {
+async function mapEntry (rawEntryPath, opts) {
 	const cfg = getConfig(opts);
 	const entryPath = resolve(rawEntryPath);
 	const entryType = await getEntryType(entryPath);
 	const entryMap = createEntryMap(entryPath, entryType);
 
-	if (!shouldBeMapped(entryMap, cfg) && !force) return null;
+	if (!shouldBeMapped(entryMap, cfg)) return null;
 	if (entryType === FILE) return entryMap;
 	if (entryType === FOLDER) {
 		const entries = await readDir(entryPath);
 		const entryName = entryMap.name.toLowerCase();
-
-		if (cfg.includeNames && cfg.includeNames.includes(entryName)) force = true;
-
-		const entriesObj = await mapEntries(entryPath, entries, opts, force);
+		const subOpts = getSubFolderOpts(entryName, cfg);
+		const entriesObj = await mapEntries(entryPath, entries, subOpts || opts);
 
 		if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
 		if (entriesObj) entryMap.entries = entriesObj;
@@ -30,21 +28,19 @@ async function mapEntry (rawEntryPath, opts, force) {
 	}
 }
 
-function mapEntrySync (rawEntryPath, opts, force) {
+function mapEntrySync (rawEntryPath, opts) {
 	const cfg = getConfig(opts);
 	const entryPath = resolve(rawEntryPath);
 	const entryType = getEntryTypeSync(entryPath);
 	const entryMap = createEntryMap(entryPath, entryType);
 
-	if (!shouldBeMapped(entryMap, cfg) && !force) return null;
+	if (!shouldBeMapped(entryMap, cfg)) return null;
 	if (entryType === FILE) return entryMap;
 	if (entryType === FOLDER) {
 		const entries = readdirSync(entryPath);
 		const entryName = entryMap.name.toLowerCase();
-
-		if (cfg.includeNames && cfg.includeNames.includes(entryName)) force = true;
-
-		const entriesObj = mapEntriesSync(entryPath, entries, opts, force);
+		const subOpts = getSubFolderOpts(entryName, cfg);
+		const entriesObj = mapEntriesSync(entryPath, entries, subOpts || opts);
 
 		if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
 		if (entriesObj) entryMap.entries = entriesObj;
@@ -53,14 +49,14 @@ function mapEntrySync (rawEntryPath, opts, force) {
 	}
 }
 
-function mapEntries (parentPath, entries, opts, force) {
+function mapEntries (parentPath, entries, opts) {
 	if (!entries.length) return {};
 	const entriesObj = {};
 
 	const promises = entries.map((entryName) => {
 		const entryPath = join(parentPath, entryName);
 
-		return mapEntry(entryPath, opts, force).then((entryMap) => {
+		return mapEntry(entryPath, opts).then((entryMap) => {
 			if (entryMap) entriesObj[entryName] = entryMap;
 		});
 	});
@@ -68,13 +64,13 @@ function mapEntries (parentPath, entries, opts, force) {
 	return Promise.all(promises).then(() => entriesObj);
 }
 
-function mapEntriesSync (parentPath, entries, opts, force) {
+function mapEntriesSync (parentPath, entries, opts) {
 	if (!entries.length) return {};
 	const entriesObj = {};
 
 	entries.forEach((entryName) => {
 		const entryPath = join(parentPath, entryName);
-		const entryMap = mapEntrySync(entryPath, opts, force);
+		const entryMap = mapEntrySync(entryPath, opts);
 
 		if (entryMap) entriesObj[entryName] = entryMap;
 	});
@@ -94,6 +90,17 @@ function getEntryTypeSync (entryPath) {
 	const isFolder = statObj.isDirectory();
 
 	return isFolder ? FOLDER : FILE;
+}
+
+function getSubFolderOpts (entryName, cfg) {
+	if (cfg.includeNames && cfg.includeNames.includes(entryName)) {
+		if (cfg.includeFolders && cfg.includeFolders.has(entryName)) {
+			return cfg.includeFolders.get(entryName);
+		}
+		return {};
+	}
+
+	return null;
 }
 
 function createEntryMap (entryPath, entryType) {

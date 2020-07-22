@@ -41,19 +41,6 @@ module.exports = () => {
 
 	describe('arg[1]', () => {
 		describe('exclude', () => {
-			it('skips a given item', async () => {
-				let res;
-
-				try {
-					res = await mapFolder(getTestFolderPath('/'), 'wish-list.txt');
-				}
-				catch (ex) {
-					return expect(false).to.be.true;
-				}
-
-				return expect(res).to.deep.equal(getExpectedResultFor('excludeFile'));
-			});
-
 			it('skips given list of items', async () => {
 				let res;
 
@@ -158,7 +145,7 @@ module.exports = () => {
 						});
 
 						resB = await mapFolder(getTestFolderPath('/'), {
-							exclude: 'index.html',
+							exclude: ['index.html'],
 							filter: ({name}) => {
 								callsCountB++;
 								return !name.includes('h');
@@ -270,6 +257,28 @@ module.exports = () => {
 					}
 
 					expect(res).to.deep.equal(getExpectedResultFor('extensionsAndWholeFolder'));
+				});
+
+				it('maps given folders with their own options', async () => {
+					let res;
+
+					try {
+						res = await mapFolder(getTestFolderPath('/'), {
+							include: [
+								'.txt',
+								{
+									name: 'code',
+									include: ['.js', '.html'],
+									exclude: ['app.js'],
+								}
+							],
+						});
+					}
+					catch (ex) {
+						return expect(false).to.be.true;
+					}
+
+					expect(res).to.deep.equal(getExpectedResultFor('folderWithOptions'));
 				});
 			});
 

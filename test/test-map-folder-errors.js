@@ -17,27 +17,53 @@ module.exports = () => {
 		return expect(false).to.be.true;
 	});
 
-	it('throws when exclude is not a string nor an array', () => {
+	it('throws when `exclude` option is not an array', () => {
 		try {
 			mapFolderSync('./', {
 				exclude: () => null,
 			});
 		}
 		catch (ex) {
-			return expect(ex.message).to.contain('`exclude` must be either a string or an array');
+			return expect(ex.message).to.contain('map-folder: `exclude` option must be an array.');
 		}
 
 		return expect(false).to.be.true;
 	});
 
-	it('throws when include is not a string nor an array', () => {
+	it('throws when `exclude` option is not an array of strings', () => {
+		try {
+			mapFolderSync('./', {
+				exclude: [null],
+			});
+		}
+		catch (ex) {
+			return expect(ex.message).to.contain('map-folder: `exclude` array should be an array of strings only.');
+		}
+
+		return expect(false).to.be.true;
+	});
+
+	it('throws when `include` option is not an array', () => {
 		try {
 			mapFolderSync('./', {
 				include: () => null,
 			});
 		}
 		catch (ex) {
-			return expect(ex.message).to.contain('`include` must be either a string or an array');
+			return expect(ex.message).to.contain('map-folder: `include` option must be an array.');
+		}
+
+		return expect(false).to.be.true;
+	});
+
+	it('throws when `include` option is not an array of strings or objects with a `name` prop', () => {
+		try {
+			mapFolderSync('./', {
+				include: [null],
+			});
+		}
+		catch (ex) {
+			return expect(ex.message).to.contain('map-folder: `include` option must be an array of strings or objects. Objects must have a `name` property');
 		}
 
 		return expect(false).to.be.true;
