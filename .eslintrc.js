@@ -31,6 +31,7 @@ module.exports = {
 			'global-require': 'off',
 			'no-new': 'off',
 			'no-shadow': 'off',
+			'object-property-newline': 'off',
 		},
 	}],
 	rules: {
@@ -116,10 +117,7 @@ module.exports = {
 			capIsNew: false,
 		}],
 		'new-parens': 'error',
-		'newline-after-var': [
-			'error',
-			'always'
-		],
+//		'newline-after-var': [ 'off', 'always' ],
 //		'newline-before-return': 'off',
 		'newline-per-chained-call': ['error', {
 			ignoreChainWithDepth: 3
