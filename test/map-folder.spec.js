@@ -29,11 +29,6 @@ describe('map-folder', () => {
 		expect(mapFolder.mapFolderSync).to.be.a('function');
 	});
 
-	it('exports entry type constants', () => {
-		expect(mapFolder.FOLDER).to.equal(0);
-		expect(mapFolder.FILE).to.equal(1);
-	});
-
 	describe('mapFolder', require('./test-map-folder-async'));
 	describe('mapFolderSync', require('./test-map-folder-sync'));
 	describe('Errors', require('./test-map-folder-errors'));

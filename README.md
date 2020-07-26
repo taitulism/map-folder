@@ -37,17 +37,17 @@ Results:
 ```js
 {
     path: 'path/to/my-project',
-    type: FOLDER,
+    isFolder: true,
     name: 'my-project',
     entries: {
         'common': {
             path:'path/to/my-project/common',
             name: 'common',
-            type: FOLDER,
+            isFolder: true,
             entries: {
                 "utils.js": {
                     path:'path/to/my-project/common/utils.js',
-                    type: FILE,
+                    isFolder: false,
                     name: 'utils.js',
                     base: 'utils',
                     ext: 'js',
@@ -56,7 +56,7 @@ Results:
         },
         'index.js': {
             path:'path/to/my-project/index.js',
-            type: FILE,
+            isFolder: false,
             name: 'index.js',
             base: 'index',
             ext: 'js',
@@ -166,7 +166,7 @@ Return `true` to map the entry or `false` to skip it.
 ```js
 // map all folders and files that starts with an "a"
 mapFolder('./my-project', {
-    filter: ({type, base}) => type === FOLDER || base.startsWith('a')
+    filter: ({isFolder, base}) => isFolder || base.startsWith('a')
 })
 ```
 
@@ -178,41 +178,24 @@ mapFolder('./my-project', (entryMap) => boolean)
 
 ## Entry Map Object
 Every entry in the result (including the result itself) holds the following properties:  
-<!-- * `name`: `String` - The whole entry name. Includes file extensions.
-* `path`: `String` - the absolute path to the entry.
-* `type`: `Number` - a file or a folder enum. -->
 
-| Prop name | Type   | Description                                     |
-|-----------|--------|-------------------------------------------------|
-| `name`    | String | The whole entry name. Includes file extensions. |
-| `path`    | String | the absolute path to the entry.                 |
-| `type`    | Number | a file or a folder enum.                        |
+| Prop name  | Type    | Description                                     |
+|------------|---------|-------------------------------------------------|
+| `name`     | String  | The whole entry name. Includes file extensions. |
+| `path`     | String  | the absolute path to the entry.                 |
+| `isFolder` | Boolean | `true` for folders, `false` for files.          |
 
 
 Each type has its own additional properties:
-* **FOLDER** - 0
-    <!-- * `entries`: Object - An object of the folder's child `entryMap`s (sub-folders and files). -->
-
+* **Folder**
     | Prop name | Type   | Description                                                              |
     |-----------|--------|--------------------------------------------------------------------------|
     | `entries` | Object | A JSON object of the folder's child `entryMap`s (sub-folders and files). |
 
-* **FILE** - 1
-    <!-- * `base`: String - The file name without the extension.
-    * `ext`: String - The file extension without a dot. -->
-
-    
+* **File**
     | Prop name | Type   | Description                          |
     |-----------|--------|--------------------------------------|
     | `base`    | String | The file name without the extension. |
     | `ext`     | String | The file extension without a dot.    |
 
-You can use the exported `FILE` and `FOLDER` constants as types to check entry type:
-```js
-const {FILE, FOLDER} = require('map-folder');
-
-if (result.entries.myApp.type === FOLDER) {
-    // ...
-}
-```
 > There are other entry types like symlinks, currently out of this module's scope.

@@ -4,49 +4,49 @@ const getTestFolderPath = require('./get-test-folder-path');
 module.exports = function getFullExpectedResult () {
 	return {
 		name: 'dummy-folder',
-		type: 0,
+		isFolder: true,
 		path: getTestFolderPath('/'),
 		entries: {
 			'article.doc': {
 				name: 'article.doc',
-				type: 1,
+				isFolder: false,
 				base: 'article',
 				ext: 'doc',
 				path: getTestFolderPath('/article.doc'),
 			},
 			notes: {
 				name: 'notes',
-				type: 0,
+				isFolder: true,
 				path: getTestFolderPath('/notes'),
 				entries: {
 					'wish-list.txt': {
 						name: 'wish-list.txt',
-						type: 1,
+						isFolder: false,
 						base: 'wish-list',
 						ext: 'txt',
 						path: getTestFolderPath('/notes/wish-list.txt'),
 					},
 					empty: {
 						name: 'empty',
-						type: 0,
+						isFolder: true,
 						path: getTestFolderPath('/notes/empty'),
 						entries: {},
 					},
 					personal: {
 						name: 'personal',
-						type: 0,
+						isFolder: true,
 						path: getTestFolderPath('/notes/personal'),
 						entries: {
 							'contacts.csv': {
 								name: 'contacts.csv',
-								type: 1,
+								isFolder: false,
 								base: 'contacts',
 								ext: 'csv',
 								path: getTestFolderPath('/notes/personal/contacts.csv'),
 							},
 							'goals.txt': {
 								name: 'goals.txt',
-								type: 1,
+								isFolder: false,
 								base: 'goals',
 								ext: 'txt',
 								path: getTestFolderPath('/notes/personal/goals.txt'),
@@ -57,19 +57,19 @@ module.exports = function getFullExpectedResult () {
 			},
 			diary: {
 				name: 'diary',
-				type: 0,
+				isFolder: true,
 				path: getTestFolderPath('/diary'),
 				entries: {
 					'day-1.txt': {
 						name: 'day-1.txt',
-						type: 1,
+						isFolder: false,
 						base: 'day-1',
 						ext: 'txt',
 						path: getTestFolderPath('/diary/day-1.txt'),
 					},
 					'day-2.txt': {
 						name: 'day-2.txt',
-						type: 1,
+						isFolder: false,
 						base: 'day-2',
 						ext: 'txt',
 						path: getTestFolderPath('/diary/day-2.txt'),
@@ -78,66 +78,66 @@ module.exports = function getFullExpectedResult () {
 			},
 			code: {
 				name: 'code',
-				type: 0,
+				isFolder: true,
 				path: getTestFolderPath('/code'),
 				entries: {
 					'app.js': {
 						name: 'app.js',
-						type: 1,
+						isFolder: false,
 						base: 'app',
 						ext: 'js',
 						path: getTestFolderPath('/code/app.js'),
 					},
 					'app.min.js': {
 						name: 'app.min.js',
-						type: 1,
+						isFolder: false,
 						base: 'app.min',
 						ext: 'js',
 						path: getTestFolderPath('/code/app.min.js'),
 					},
 					'index.html': {
 						name: 'index.html',
-						type: 1,
+						isFolder: false,
 						base: 'index',
 						ext: 'html',
 						path: getTestFolderPath('/code/index.html'),
 					},
 					'style.css': {
 						name: 'style.css',
-						type: 1,
+						isFolder: false,
 						base: 'style',
 						ext: 'css',
 						path: getTestFolderPath('/code/style.css'),
 					},
 					'.dotfile': {
 						name: '.dotfile',
-						type: 1,
+						isFolder: false,
 						base: '',
 						ext: 'dotfile',
 						path: getTestFolderPath('/code/.dotfile'),
 					},
 					FLAG: {
 						name: 'FLAG',
-						type: 1,
+						isFolder: false,
 						base: 'FLAG',
 						ext: '',
 						path: getTestFolderPath('/code/FLAG'),
 					},
 					images: {
 						name: 'images',
-						type: 0,
+						isFolder: true,
 						path: getTestFolderPath('/code/images'),
 						entries: {
 							'logo.png': {
 								name: 'logo.png',
-								type: 1,
+								isFolder: false,
 								base: 'logo',
 								ext: 'png',
 								path: getTestFolderPath('/code/images/logo.png'),
 							},
 							'photo.jpg': {
 								name: 'photo.jpg',
-								type: 1,
+								isFolder: false,
 								base: 'photo',
 								ext: 'jpg',
 								path: getTestFolderPath('/code/images/photo.jpg'),

@@ -2,7 +2,6 @@
 const {statSync, readdirSync} = require('fs');
 const {resolve, parse, join} = require('path');
 
-const {FILE, FOLDER} = require('./constants');
 const getStat = require('./promised/get-stat');
 const readDir = require('./promised/read-dir');
 const getConfig = require('./get-configs');
@@ -10,43 +9,43 @@ const getConfig = require('./get-configs');
 async function mapEntry (rawEntryPath, opts) {
 	const cfg = getConfig(opts);
 	const entryPath = resolve(rawEntryPath);
-	const entryType = await getEntryType(entryPath);
-	const entryMap = createEntryMap(entryPath, entryType);
+	const isFolder = (await getStat(entryPath)).isDirectory();
+	const entryMap = createEntryMap(entryPath, isFolder);
 
 	if (!shouldBeMapped(entryMap, cfg)) return null;
-	if (entryType === FILE) return entryMap;
-	if (entryType === FOLDER) {
-		const entries = await readDir(entryPath);
-		const entryName = entryMap.name.toLowerCase();
-		const subOpts = getSubFolderOpts(entryName, cfg);
-		const entriesObj = await mapEntries(entryPath, entries, subOpts || opts);
+	if (!isFolder) return entryMap;
 
-		if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
-		if (entriesObj) entryMap.entries = entriesObj;
+	// Folder
+	const entries = await readDir(entryPath);
+	const entryName = entryMap.name.toLowerCase();
+	const subOpts = getSubFolderOpts(entryName, cfg);
+	const entriesObj = await mapEntries(entryPath, entries, subOpts || opts);
 
-		return entryMap;
-	}
+	if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+	if (entriesObj) entryMap.entries = entriesObj;
+
+	return entryMap;
 }
 
 function mapEntrySync (rawEntryPath, opts) {
 	const cfg = getConfig(opts);
 	const entryPath = resolve(rawEntryPath);
-	const entryType = getEntryTypeSync(entryPath);
-	const entryMap = createEntryMap(entryPath, entryType);
+	const isFolder = statSync(entryPath).isDirectory();
+	const entryMap = createEntryMap(entryPath, isFolder);
 
 	if (!shouldBeMapped(entryMap, cfg)) return null;
-	if (entryType === FILE) return entryMap;
-	if (entryType === FOLDER) {
-		const entries = readdirSync(entryPath);
-		const entryName = entryMap.name.toLowerCase();
-		const subOpts = getSubFolderOpts(entryName, cfg);
-		const entriesObj = mapEntriesSync(entryPath, entries, subOpts || opts);
+	if (!isFolder) return entryMap;
 
-		if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
-		if (entriesObj) entryMap.entries = entriesObj;
+	// Folder
+	const entries = readdirSync(entryPath);
+	const entryName = entryMap.name.toLowerCase();
+	const subOpts = getSubFolderOpts(entryName, cfg);
+	const entriesObj = mapEntriesSync(entryPath, entries, subOpts || opts);
 
-		return entryMap;
-	}
+	if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
+	if (entriesObj) entryMap.entries = entriesObj;
+
+	return entryMap;
 }
 
 function mapEntries (parentPath, entries, opts) {
@@ -78,20 +77,6 @@ function mapEntriesSync (parentPath, entries, opts) {
 	return entriesObj;
 }
 
-async function getEntryType (entryPath) {
-	const statObj = await getStat(entryPath);
-	const isFolder = statObj.isDirectory();
-
-	return isFolder ? FOLDER : FILE;
-}
-
-function getEntryTypeSync (entryPath) {
-	const statObj = statSync(entryPath);
-	const isFolder = statObj.isDirectory();
-
-	return isFolder ? FOLDER : FILE;
-}
-
 function getSubFolderOpts (entryName, cfg) {
 	if (cfg.includeNames && cfg.includeNames.includes(entryName)) {
 		if (cfg.includeFolders && cfg.includeFolders.has(entryName)) {
@@ -103,16 +88,17 @@ function getSubFolderOpts (entryName, cfg) {
 	return null;
 }
 
-function createEntryMap (entryPath, entryType) {
+function createEntryMap (entryPath, isFolder) {
 	const pathObj = parse(entryPath);
 
 	const {base, name, ext} = pathObj;
 	const entryMap = {
+		isFolder,
 		path: entryPath,
-		type: entryType,
+		name: base,
 	};
 
-	if (entryType === FILE) {
+	if (!isFolder) {
 		entryMap.name = base;
 
 		// .dotfile
@@ -124,9 +110,6 @@ function createEntryMap (entryPath, entryType) {
 			entryMap.base = name;
 			entryMap.ext = ext.substr(1);
 		}
-	}
-	else if (entryType === FOLDER) {
-		entryMap.name = base;
 	}
 
 	return entryMap;
@@ -147,7 +130,7 @@ function shouldBeMapped (entryMap, cfg) {
 	if (includeNames && includeNames.includes(entryName)) return true;
 	if (excludeNames && excludeNames.includes(entryName)) return false;
 
-	if (entryMap.type === FOLDER) return (filter) ? filter(entryMap) : true;
+	if (entryMap.isFolder) return (filter) ? filter(entryMap) : true;
 
 	const fileExt = entryMap.ext.toLowerCase();
 

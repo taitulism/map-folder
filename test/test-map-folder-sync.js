@@ -108,10 +108,10 @@ module.exports = () => {
 				let i = 0;
 
 				const NOT_FOUND = -1;
-				const filter = ({name, path, type}) => {
+				const filter = ({name, path, isFolder}) => {
 					expect(expected.indexOf(name)).to.be.above(NOT_FOUND);
 					expect(path).to.be.a('string');
-					expect(type).to.be.oneOf([0, 1]);
+					expect(isFolder).to.be.a('boolean');
 					i++;
 
 					return true;
