@@ -1,12 +1,12 @@
 /* eslint-disable max-lines-per-function */
 const {expect} = require('chai');
 
-const {mapFolderSync} = require('..');
+const mapFolder = require('..');
 
 module.exports = () => {
 	it('throws when filter is not a function', () => {
 		try {
-			mapFolderSync('./', {
+			mapFolder('./', {
 				filter: 'not a function',
 			});
 		}
@@ -19,7 +19,7 @@ module.exports = () => {
 
 	it('throws when `exclude` option is not an array', () => {
 		try {
-			mapFolderSync('./', {
+			mapFolder('./', {
 				exclude: () => null,
 			});
 		}
@@ -32,7 +32,7 @@ module.exports = () => {
 
 	it('throws when `exclude` option is not an array of strings', () => {
 		try {
-			mapFolderSync('./', {
+			mapFolder('./', {
 				exclude: [5],
 			});
 		}
@@ -45,7 +45,7 @@ module.exports = () => {
 
 	it('throws when `include` option is not an array', () => {
 		try {
-			mapFolderSync('./', {
+			mapFolder('./', {
 				include: () => null,
 			});
 		}
@@ -58,7 +58,7 @@ module.exports = () => {
 
 	it('throws when `include` option is not an array of strings or objects with a `name` prop', () => {
 		try {
-			mapFolderSync('./', {
+			mapFolder('./', {
 				include: [5],
 			});
 		}

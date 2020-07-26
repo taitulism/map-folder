@@ -3,6 +3,7 @@ const TRUTHY_VALUES = thing => thing;
 // eslint-disable-next-line max-statements, max-lines-per-function
 module.exports = function getConfigs (opts) {
 	if (opts && opts.isConfigured) return opts;
+
 	let rawExclude = null;
 	let rawInclude = null;
 	let excludeNames = null;
@@ -12,18 +13,14 @@ module.exports = function getConfigs (opts) {
 	let foldersOptsMap = null;
 	let filter = null;
 	let skipEmpty = false;
+	let async = false;
 
-	if (Array.isArray(opts)) {
-		rawExclude = opts;
-	}
-	else if (typeof opts == 'function') {
-		filter = opts;
-	}
-	else if (typeof opts == 'object' && opts != null) {
+	if (opts && typeof opts == 'object') {
 		rawExclude = opts.exclude || null;
 		rawInclude = opts.include || null;
 		filter = opts.filter || null;
 		skipEmpty = opts.skipEmpty || skipEmpty;
+		async = opts.async == null ? async : opts.async;
 
 		if (rawInclude) {
 			[
@@ -34,20 +31,21 @@ module.exports = function getConfigs (opts) {
 
 			skipEmpty = opts.skipEmpty == null ? true : skipEmpty;
 		}
-	}
 
-	if (rawExclude) {
-		[
-			excludeNames,
-			excludeExtensions
-		] = parseExclude(rawExclude);
-	}
+		if (rawExclude) {
+			[
+				excludeNames,
+				excludeExtensions
+			] = parseExclude(rawExclude);
+		}
 
-	if (filter && typeof filter != 'function') {
-		throw new Error('map-folder: `filter` must be a function.');
+		if (filter && typeof filter != 'function') {
+			throw new Error('map-folder: `filter` must be a function.');
+		}
 	}
 
 	return {
+		async,
 		filter,
 		skipEmpty,
 		excludeNames,

@@ -4,11 +4,19 @@ const {resolve, parse, join} = require('path');
 
 const getStat = require('./promised/get-stat');
 const readDir = require('./promised/read-dir');
-const getConfig = require('./get-configs');
+const getConfigs = require('./get-configs');
 
-async function mapEntry (rawEntryPath, opts) {
-	const cfg = getConfig(opts);
+function mapEntry (rawEntryPath, opts) {
+	const cfg = getConfigs(opts);
 	const entryPath = resolve(rawEntryPath);
+
+	return cfg.async
+		? mapEntryAsync(entryPath, cfg)
+		: mapEntrySync(entryPath, cfg)
+	;
+}
+
+async function mapEntryAsync (entryPath, cfg) {
 	const isFolder = (await getStat(entryPath)).isDirectory();
 	const entryMap = createEntryMap(entryPath, isFolder);
 
@@ -19,7 +27,7 @@ async function mapEntry (rawEntryPath, opts) {
 	const entries = await readDir(entryPath);
 	const entryName = entryMap.name.toLowerCase();
 	const subOpts = getSubFolderOpts(entryName, cfg);
-	const entriesObj = await mapEntries(entryPath, entries, subOpts || opts);
+	const entriesObj = await mapEntriesAsync(entryPath, entries, subOpts || cfg);
 
 	if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
 	if (entriesObj) entryMap.entries = entriesObj;
@@ -27,9 +35,7 @@ async function mapEntry (rawEntryPath, opts) {
 	return entryMap;
 }
 
-function mapEntrySync (rawEntryPath, opts) {
-	const cfg = getConfig(opts);
-	const entryPath = resolve(rawEntryPath);
+function mapEntrySync (entryPath, cfg) {
 	const isFolder = statSync(entryPath).isDirectory();
 	const entryMap = createEntryMap(entryPath, isFolder);
 
@@ -40,7 +46,7 @@ function mapEntrySync (rawEntryPath, opts) {
 	const entries = readdirSync(entryPath);
 	const entryName = entryMap.name.toLowerCase();
 	const subOpts = getSubFolderOpts(entryName, cfg);
-	const entriesObj = mapEntriesSync(entryPath, entries, subOpts || opts);
+	const entriesObj = mapEntriesSync(entryPath, entries, subOpts || cfg);
 
 	if (cfg.skipEmpty && !Object.keys(entriesObj).length) return null;
 	if (entriesObj) entryMap.entries = entriesObj;
@@ -48,14 +54,14 @@ function mapEntrySync (rawEntryPath, opts) {
 	return entryMap;
 }
 
-function mapEntries (parentPath, entries, opts) {
+function mapEntriesAsync (parentPath, entries, cfg) {
 	if (!entries.length) return {};
 	const entriesObj = {};
 
 	const promises = entries.map((entryName) => {
 		const entryPath = join(parentPath, entryName);
 
-		return mapEntry(entryPath, opts).then((entryMap) => {
+		return mapEntryAsync(entryPath, cfg).then((entryMap) => {
 			if (entryMap) entriesObj[entryName] = entryMap;
 		});
 	});
@@ -63,13 +69,13 @@ function mapEntries (parentPath, entries, opts) {
 	return Promise.all(promises).then(() => entriesObj);
 }
 
-function mapEntriesSync (parentPath, entries, opts) {
+function mapEntriesSync (parentPath, entries, cfg) {
 	if (!entries.length) return {};
 	const entriesObj = {};
 
 	entries.forEach((entryName) => {
 		const entryPath = join(parentPath, entryName);
-		const entryMap = mapEntrySync(entryPath, opts);
+		const entryMap = mapEntrySync(entryPath, cfg);
 
 		if (entryMap) entriesObj[entryName] = entryMap;
 	});
@@ -80,7 +86,8 @@ function mapEntriesSync (parentPath, entries, opts) {
 function getSubFolderOpts (entryName, cfg) {
 	if (cfg.includeNames && cfg.includeNames.includes(entryName)) {
 		if (cfg.includeFolders && cfg.includeFolders.has(entryName)) {
-			return cfg.includeFolders.get(entryName);
+			const opts = cfg.includeFolders.get(entryName);
+			return getConfigs(opts);
 		}
 		return {};
 	}
@@ -142,5 +149,4 @@ function shouldBeMapped (entryMap, cfg) {
 	return defaultRetVal;
 }
 
-module.exports.async = mapEntry;
-module.exports.sync = mapEntrySync;
+module.exports = mapEntry;

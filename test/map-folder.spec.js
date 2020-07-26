@@ -6,7 +6,7 @@ const {expect} = require('chai');
 const mapFolder = require('../');
 const getTestFolderPath = require('./expected-results/get-test-folder-path');
 
-describe('map-folder', () => {
+describe('map-folder\n  ──────────', () => {
 	const gitkeepPath = getTestFolderPath('/notes/empty/.gitkeep');
 
 	before((done) => {
@@ -23,13 +23,11 @@ describe('map-folder', () => {
 		});
 	});
 
-	it('exports sync & async functions', () => {
+	it('exports a function', () => {
 		expect(mapFolder).to.be.a('function');
-		expect(mapFolder.mapFolder).to.be.a('function');
-		expect(mapFolder.mapFolderSync).to.be.a('function');
 	});
 
-	describe('mapFolder', require('./test-map-folder-async'));
-	describe('mapFolderSync', require('./test-map-folder-sync'));
 	describe('Errors', require('./test-map-folder-errors'));
+	describe('sync', require('./test-map-folder-sync'));
+	describe('async', require('./test-map-folder-async'));
 });

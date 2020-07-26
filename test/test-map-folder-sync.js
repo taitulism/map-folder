@@ -2,7 +2,7 @@
 
 const {expect} = require('chai');
 
-const {mapFolderSync} = require('..');
+const mapFolder = require('..');
 const getExpectedResultFor = require('./expected-results/get-expected-result');
 const getTestFolderPath = require('./expected-results/get-test-folder-path');
 
@@ -12,7 +12,7 @@ module.exports = () => {
 			let res;
 
 			try {
-				res = mapFolderSync(getTestFolderPath('article.doc'));
+				res = mapFolder(getTestFolderPath('article.doc'));
 			}
 			catch (ex) {
 				throw expect(false).to.be.true;
@@ -25,7 +25,7 @@ module.exports = () => {
 			let res;
 
 			try {
-				res = mapFolderSync(getTestFolderPath('diary'));
+				res = mapFolder(getTestFolderPath('diary'));
 			}
 			catch (ex) {
 				throw expect(false).to.be.true;
@@ -38,7 +38,7 @@ module.exports = () => {
 			let res;
 
 			try {
-				res = mapFolderSync(getTestFolderPath('/'));
+				res = mapFolder(getTestFolderPath('/'));
 			}
 			catch (ex) {
 				throw expect(false).to.be.true;
@@ -48,22 +48,7 @@ module.exports = () => {
 		});
 	});
 
-	describe('arg[1]', () => {
-		describe('exclude', () => {
-			it('skips given list of items', () => {
-				let res;
-
-				try {
-					res = mapFolderSync(getTestFolderPath('/'), ['personal', 'day-2.txt']);
-				}
-				catch (ex) {
-					return expect(false).to.be.true;
-				}
-
-				expect(res).to.deep.equal(getExpectedResultFor('excludeEntryNames'));
-			});
-		});
-
+	describe('arg[1] - options', () => {
 		describe('filter', () => {
 			it('works as a predicate function', () => {
 				let res;
@@ -71,13 +56,47 @@ module.exports = () => {
 				try {
 					const filter = ({name}) => !name.includes('h');
 
-					res = mapFolderSync(getTestFolderPath('/'), filter);
+					res = mapFolder(getTestFolderPath('/'), {filter});
 				}
 				catch (ex) {
 					return expect(false).to.be.true;
 				}
 
 				expect(res).to.deep.equal(getExpectedResultFor('filter'));
+			});
+
+			it('is called after `include`/`exclude`', () => {
+				let resA, resB;
+				let callsCountA = 0;
+				let callsCountB = 0;
+
+				try {
+					resA = mapFolder(getTestFolderPath('/'), {
+						filter: ({name}) => {
+							callsCountA++;
+							return !name.includes('h');
+						},
+					});
+
+					resB = mapFolder(getTestFolderPath('/'), {
+						exclude: ['index.html', null],
+						filter: ({name}) => {
+							callsCountB++;
+							return !name.includes('h');
+						},
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
+
+				const sameResult = getExpectedResultFor('filterAfter');
+
+				expect(resA).to.deep.equal(sameResult);
+				expect(resB).to.deep.equal(sameResult);
+
+				// second filter is called 1 time less because of the `exclude`
+				expect(callsCountA - callsCountB).to.equal(1);
 			});
 
 			it('accepts `pathObj` argument', () => {
@@ -117,196 +136,143 @@ module.exports = () => {
 					return true;
 				};
 
-				mapFolderSync(getTestFolderPath('/'), filter);
+				mapFolder(getTestFolderPath('/'), {filter});
 
 				return expect(i).to.equal(expected.length);
 			});
 		});
 
-		describe('options', () => {
-			describe('filter', () => {
-				it('works as a predicate function', () => {
-					let res;
+		describe('exclude', () => {
+			it('skips given list of entry names', () => {
+				let res;
 
-					try {
-						const filter = ({name}) => !name.includes('h');
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						exclude: ['personal', 'day-2.txt'],
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
 
-						res = mapFolderSync(getTestFolderPath('/'), {filter});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					expect(res).to.deep.equal(getExpectedResultFor('filter'));
-				});
-
-				it('is called after `include`/`exclude`', () => {
-					let resA, resB;
-					let callsCountA = 0;
-					let callsCountB = 0;
-
-					try {
-						resA = mapFolderSync(getTestFolderPath('/'), {
-							filter: ({name}) => {
-								callsCountA++;
-								return !name.includes('h');
-							},
-						});
-
-						resB = mapFolderSync(getTestFolderPath('/'), {
-							exclude: ['index.html', null],
-							filter: ({name}) => {
-								callsCountB++;
-								return !name.includes('h');
-							},
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					const sameResult = getExpectedResultFor('filterAfter');
-
-					expect(resA).to.deep.equal(sameResult);
-					expect(resB).to.deep.equal(sameResult);
-
-					// second filter is called 1 time less because of the `exclude`
-					expect(callsCountA - callsCountB).to.equal(1);
-				});
+				expect(res).to.deep.equal(getExpectedResultFor('excludeEntryNames'));
 			});
 
-			describe('exclude', () => {
-				it('skips given list of entry names', () => {
-					let res;
+			it('skips given list of file extensions', () => {
+				let res;
 
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							exclude: ['personal', 'day-2.txt'],
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						exclude: ['.csv', '.doc']
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
 
-					expect(res).to.deep.equal(getExpectedResultFor('excludeEntryNames'));
-				});
+				expect(res).to.deep.equal(getExpectedResultFor('excludeExtensions'));
+			});
+		});
 
-				it('skips given list of file extensions', () => {
-					let res;
+		describe('include', () => {
+			it('only maps given file extensions', () => {
+				let res;
 
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							exclude: ['.csv', '.doc']
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						include: ['.csv', '.doc'],
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
 
-					expect(res).to.deep.equal(getExpectedResultFor('excludeExtensions'));
-				});
+				expect(res).to.deep.equal(getExpectedResultFor('includeExtensions'));
 			});
 
-			describe('include', () => {
-				it('only maps given file extensions', () => {
-					let res;
+			it('only maps given files', () => {
+				let res;
 
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							include: ['.csv', '.doc'],
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						include: ['day-2.txt', 'app.min.js'],
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
 
-					expect(res).to.deep.equal(getExpectedResultFor('includeExtensions'));
-				});
-
-				it('only maps given files', () => {
-					let res;
-
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							include: ['day-2.txt', 'app.min.js'],
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					expect(res).to.deep.equal(getExpectedResultFor('includeFiles'));
-				});
-
-				it('only maps given file extensions and specific files', () => {
-					let res;
-
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							include: ['.csv', '.doc', 'day-2.txt'],
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					expect(res).to.deep.equal(getExpectedResultFor('includeExtensionsAndFiles'));
-				});
-
-				it('only maps given file extensions and everything in given folders', () => {
-					let res;
-
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							include: ['.txt', 'code'],
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					expect(res).to.deep.equal(getExpectedResultFor('extensionsAndWholeFolder'));
-				});
-
-				it('maps given folders with their own options', () => {
-					let res;
-
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							include: [
-								'.txt',
-								{
-									name: 'code',
-									include: ['.js', '.html'],
-									exclude: ['app.js'],
-								}
-							],
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
-
-					expect(res).to.deep.equal(getExpectedResultFor('folderWithOptions'));
-				});
+				expect(res).to.deep.equal(getExpectedResultFor('includeFiles'));
 			});
 
-			describe('skipEmpty', () => {
-				it('toggle skip empty folders when using `include`', () => {
-					let res;
+			it('only maps given file extensions and specific files', () => {
+				let res;
 
-					try {
-						res = mapFolderSync(getTestFolderPath('/'), {
-							include: ['.csv', '.doc'],
-							skipEmpty: false,
-						});
-					}
-					catch (ex) {
-						return expect(false).to.be.true;
-					}
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						include: ['.csv', '.doc', 'day-2.txt'],
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
 
-					expect(res).to.deep.equal(getExpectedResultFor('skipEmpty'));
-				});
+				expect(res).to.deep.equal(getExpectedResultFor('includeExtensionsAndFiles'));
+			});
+
+			it('only maps given file extensions and everything in given folders', () => {
+				let res;
+
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						include: ['.txt', 'code'],
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
+
+				expect(res).to.deep.equal(getExpectedResultFor('extensionsAndWholeFolder'));
+			});
+
+			it('maps given folders with their own options', () => {
+				let res;
+
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						include: [
+							'.txt',
+							{
+								name: 'code',
+								include: ['.js', '.html'],
+								exclude: ['app.js'],
+							}
+						],
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
+
+				expect(res).to.deep.equal(getExpectedResultFor('folderWithOptions'));
+			});
+		});
+
+		describe('skipEmpty', () => {
+			it('toggle skip empty folders when using `include`', () => {
+				let res;
+
+				try {
+					res = mapFolder(getTestFolderPath('/'), {
+						include: ['.csv', '.doc'],
+						skipEmpty: false,
+					});
+				}
+				catch (ex) {
+					return expect(false).to.be.true;
+				}
+
+				expect(res).to.deep.equal(getExpectedResultFor('skipEmpty'));
 			});
 		});
 	});
@@ -314,7 +280,7 @@ module.exports = () => {
 
 	it('throws when given path does not exist', () => {
 		try {
-			mapFolderSync('./test/not/exist');
+			mapFolder('./test/not/exist');
 		}
 		catch (err) {
 			expect(err.message).to.include('ENOENT: no such file or directory');
