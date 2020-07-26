@@ -38,17 +38,17 @@ Results:
 ```js
 {
     path: 'path/to/folder',
-    isFolder: true,
+    isFile: false,
     name: 'my-project',
     entries: {
         'common': {
             path:'path/to/folder/common',
             name: 'common',
-            isFolder: true,
+            isFile: false,
             entries: {
                 "utils.js": {
                     path:'path/to/folder/common/utils.js',
-                    isFolder: false,
+                    isFile: true,
                     name: 'utils.js',
                     base: 'utils',
                     ext: 'js',
@@ -57,7 +57,7 @@ Results:
         },
         'index.js': {
             path:'path/to/folder/index.js',
-            isFolder: false,
+            isFile: true,
             name: 'index.js',
             base: 'index',
             ext: 'js',
@@ -157,7 +157,7 @@ mapFolder('./my-project', {
 })
 ```
 
-The `async` option will be ignored for sub-folders, and they all share the initial `async` option value.
+The `async` option will be ignored for sub-folders, and they will all share the initial top `async` option value.
 
 
 ### `filter`
@@ -168,7 +168,7 @@ Return `true` to map the entry or `false` to skip it.
 ```js
 // map all folders and files that starts with an "a"
 mapFolder('./my-project', {
-    filter: ({isFolder, base}) => isFolder || base.startsWith('a')
+    filter: ({isFile, base}) => !isFile || base.startsWith('a')
 })
 ```
 
@@ -180,7 +180,7 @@ Every entry in the result (including the result itself) holds the following prop
 |------------|---------|-------------------------------------------------|
 | `name`     | String  | The whole entry name. Includes file extensions. |
 | `path`     | String  | the absolute path to the entry.                 |
-| `isFolder` | Boolean | `true` for folders, `false` for files.          |
+| `isFile`   | Boolean | `true` for folders, `false` for files.          |
 
 
 Each type has its own additional properties:

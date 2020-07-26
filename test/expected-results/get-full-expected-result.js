@@ -4,49 +4,49 @@ const getTestFolderPath = require('./get-test-folder-path');
 module.exports = function getFullExpectedResult () {
 	return {
 		name: 'dummy-folder',
-		isFolder: true,
+		isFile: false,
 		path: getTestFolderPath('/'),
 		entries: {
 			'article.doc': {
 				name: 'article.doc',
-				isFolder: false,
+				isFile: true,
 				base: 'article',
 				ext: 'doc',
 				path: getTestFolderPath('/article.doc'),
 			},
 			notes: {
 				name: 'notes',
-				isFolder: true,
+				isFile: false,
 				path: getTestFolderPath('/notes'),
 				entries: {
 					'wish-list.txt': {
 						name: 'wish-list.txt',
-						isFolder: false,
+						isFile: true,
 						base: 'wish-list',
 						ext: 'txt',
 						path: getTestFolderPath('/notes/wish-list.txt'),
 					},
 					empty: {
 						name: 'empty',
-						isFolder: true,
+						isFile: false,
 						path: getTestFolderPath('/notes/empty'),
 						entries: {},
 					},
 					personal: {
 						name: 'personal',
-						isFolder: true,
+						isFile: false,
 						path: getTestFolderPath('/notes/personal'),
 						entries: {
 							'contacts.csv': {
 								name: 'contacts.csv',
-								isFolder: false,
+								isFile: true,
 								base: 'contacts',
 								ext: 'csv',
 								path: getTestFolderPath('/notes/personal/contacts.csv'),
 							},
 							'goals.txt': {
 								name: 'goals.txt',
-								isFolder: false,
+								isFile: true,
 								base: 'goals',
 								ext: 'txt',
 								path: getTestFolderPath('/notes/personal/goals.txt'),
@@ -57,19 +57,19 @@ module.exports = function getFullExpectedResult () {
 			},
 			diary: {
 				name: 'diary',
-				isFolder: true,
+				isFile: false,
 				path: getTestFolderPath('/diary'),
 				entries: {
 					'day-1.txt': {
 						name: 'day-1.txt',
-						isFolder: false,
+						isFile: true,
 						base: 'day-1',
 						ext: 'txt',
 						path: getTestFolderPath('/diary/day-1.txt'),
 					},
 					'day-2.txt': {
 						name: 'day-2.txt',
-						isFolder: false,
+						isFile: true,
 						base: 'day-2',
 						ext: 'txt',
 						path: getTestFolderPath('/diary/day-2.txt'),
@@ -78,66 +78,66 @@ module.exports = function getFullExpectedResult () {
 			},
 			code: {
 				name: 'code',
-				isFolder: true,
+				isFile: false,
 				path: getTestFolderPath('/code'),
 				entries: {
 					'app.js': {
 						name: 'app.js',
-						isFolder: false,
+						isFile: true,
 						base: 'app',
 						ext: 'js',
 						path: getTestFolderPath('/code/app.js'),
 					},
 					'app.min.js': {
 						name: 'app.min.js',
-						isFolder: false,
+						isFile: true,
 						base: 'app.min',
 						ext: 'js',
 						path: getTestFolderPath('/code/app.min.js'),
 					},
 					'index.html': {
 						name: 'index.html',
-						isFolder: false,
+						isFile: true,
 						base: 'index',
 						ext: 'html',
 						path: getTestFolderPath('/code/index.html'),
 					},
 					'style.css': {
 						name: 'style.css',
-						isFolder: false,
+						isFile: true,
 						base: 'style',
 						ext: 'css',
 						path: getTestFolderPath('/code/style.css'),
 					},
 					'.dotfile': {
 						name: '.dotfile',
-						isFolder: false,
+						isFile: true,
 						base: '',
 						ext: 'dotfile',
 						path: getTestFolderPath('/code/.dotfile'),
 					},
 					FLAG: {
 						name: 'FLAG',
-						isFolder: false,
+						isFile: true,
 						base: 'FLAG',
 						ext: '',
 						path: getTestFolderPath('/code/FLAG'),
 					},
 					images: {
 						name: 'images',
-						isFolder: true,
+						isFile: false,
 						path: getTestFolderPath('/code/images'),
 						entries: {
 							'logo.png': {
 								name: 'logo.png',
-								isFolder: false,
+								isFile: true,
 								base: 'logo',
 								ext: 'png',
 								path: getTestFolderPath('/code/images/logo.png'),
 							},
 							'photo.jpg': {
 								name: 'photo.jpg',
-								isFolder: false,
+								isFile: true,
 								base: 'photo',
 								ext: 'jpg',
 								path: getTestFolderPath('/code/images/photo.jpg'),
