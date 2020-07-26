@@ -1,3 +1,5 @@
+const TRUTHY_VALUES = thing => thing;
+
 // eslint-disable-next-line max-statements, max-lines-per-function
 module.exports = function getConfigs (opts) {
 	if (opts && opts.isConfigured) return opts;
@@ -24,20 +26,21 @@ module.exports = function getConfigs (opts) {
 		skipEmpty = opts.skipEmpty || skipEmpty;
 
 		if (rawInclude) {
-			validateInclude(rawInclude);
 			[
 				includeNames,
 				includeExtensions,
 				foldersOptsMap
-			] = separateNamesAndExtensions(rawInclude);
+			] = parseInclude(rawInclude);
 
 			skipEmpty = opts.skipEmpty == null ? true : skipEmpty;
 		}
 	}
 
 	if (rawExclude) {
-		validateExclude(rawExclude);
-		[excludeNames, excludeExtensions] = separateNamesAndExtensions(rawExclude);
+		[
+			excludeNames,
+			excludeExtensions
+		] = parseExclude(rawExclude);
 	}
 
 	if (filter && typeof filter != 'function') {
@@ -56,11 +59,29 @@ module.exports = function getConfigs (opts) {
 	};
 };
 
-function validateExclude (rawExclude) {
-	if (!Array.isArray(rawExclude)) {
-		throw new Error('map-folder: `exclude` option must be an array.');
-	}
+function parseInclude (rawInclude) {
+	validateIsArray('include', rawInclude);
+	const cleanInclude = rawInclude.filter(TRUTHY_VALUES);
+	validateInclude(cleanInclude);
 
+	return separateNamesAndExtensions(cleanInclude);
+}
+
+function parseExclude (rawExclude) {
+	validateIsArray('exclude', rawExclude);
+	const cleanExclude = rawExclude.filter(TRUTHY_VALUES);
+	validateExclude(cleanExclude);
+
+	return separateNamesAndExtensions(cleanExclude);
+}
+
+function validateIsArray (optName, optValue) {
+	if (!Array.isArray(optValue)) {
+		throw new Error(`map-folder: \`${optName}\` option must be an array.`);
+	}
+}
+
+function validateExclude (rawExclude) {
 	rawExclude.forEach((item) => {
 		if (!item || typeof item != 'string') {
 			throw new Error('map-folder: `exclude` array should be an array of strings only.');
@@ -69,10 +90,6 @@ function validateExclude (rawExclude) {
 }
 
 function validateInclude (rawInclude) {
-	if (!Array.isArray(rawInclude)) {
-		throw new Error('map-folder: `include` option must be an array.');
-	}
-
 	rawInclude.forEach((item) => {
 		if (!item || (typeof item != 'string' && (typeof item != 'object' || !item.name))) {
 			throw new Error('map-folder: `include` option must be an array of strings or objects. Objects must have a `name` property');

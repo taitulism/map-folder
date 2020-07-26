@@ -33,7 +33,7 @@ module.exports = () => {
 	it('throws when `exclude` option is not an array of strings', () => {
 		try {
 			mapFolderSync('./', {
-				exclude: [null],
+				exclude: [5],
 			});
 		}
 		catch (ex) {
@@ -59,7 +59,7 @@ module.exports = () => {
 	it('throws when `include` option is not an array of strings or objects with a `name` prop', () => {
 		try {
 			mapFolderSync('./', {
-				include: [null],
+				include: [5],
 			});
 		}
 		catch (ex) {

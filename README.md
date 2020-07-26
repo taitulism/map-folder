@@ -70,7 +70,7 @@ Results:
 ## `mapFolder(path, options)`
 ### Arguments:
 * **path** - A path to an existing folder.
-* **options** - Exclude/Include items. Read more below.
+* **options** - Exclude/Include items. See below.
 
 ### Return:
 A JSON object (or a promise for JSON) that represents the target folder structure.

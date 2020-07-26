@@ -154,7 +154,7 @@ module.exports = () => {
 						});
 
 						resB = mapFolderSync(getTestFolderPath('/'), {
-							exclude: ['index.html'],
+							exclude: ['index.html', null],
 							filter: ({name}) => {
 								callsCountB++;
 								return !name.includes('h');

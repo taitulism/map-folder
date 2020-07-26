@@ -145,7 +145,7 @@ module.exports = () => {
 						});
 
 						resB = await mapFolder(getTestFolderPath('/'), {
-							exclude: ['index.html'],
+							exclude: ['index.html', false],
 							filter: ({name}) => {
 								callsCountB++;
 								return !name.includes('h');
